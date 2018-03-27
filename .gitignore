@@ -1,0 +1,8 @@
+ebin/
+.rebar/
+src/auto
+erl_crash.dump
+
+*.so
+*.o
+*.d

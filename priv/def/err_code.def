@@ -1,0 +1,75 @@
+%%%-------------------------------------------------------------------
+%%% @author yujian
+%%% @doc 错误码
+%%%-------------------------------------------------------------------
+
+%% 1-1000 通用错误码
+%% 1001-2000 http
+%% 2001-3000 gm
+%% 7001-8000 im
+
+%% 10001-20000 逻辑服错误码
+%% 20001-30000 战斗服错误码
+
+enum err_code
+{
+% 版本
+    ERR_SERVER_CRASH                    = 0,    %无法连接服务器，请稍后再试
+    ERR_MAINTAIN                        = 1,    %系统维护
+    ERR_PERMISSION_DENIED               = 2,    %权限不足
+    ERR_NO_VERSION                      = 3,    %不存在该版本
+    ERR_FORCE_UPDATE                    = 4,    %强制更新
+    ERR_HIGH_FREQUENCY_ACCESS           = 5,    %访问频率过高
+    ERR_EXCEED_LIMIT                    = 6,    %超出限制
+    ERR_NETWORK_NOT_CLEAR               = 7,    %访问第三方服务，网络不畅通
+    ERR_NO_PROTO                        = 8,    %协议不存在
+
+% 系统错误
+    ERR_NOT_EXIT_PRO_DICT               = 51,   %不存在进程字典
+    ERR_EXIT_PRO_DICT                   = 52,   %已经存在进程字典
+    ERR_NOT_EXIT_PROCESS                = 53,   %不存在进程
+    ERR_EXIT_PROCESS                    = 54,   %已经存在进程
+    ERR_TYPE_ERROR                      = 55,   %type类型出错
+    ERR_CONVERT_TYPE_FAIL               = 56,   %转换类型出错
+    ERR_CHARS_VERIFY_FAIL               = 57,   %字符验证出错
+    ERR_NOT_NATURAL_NUM                 = 58,   %不是自然数
+    ERR_NOT_INTEGER                     = 59,   %不是整数
+
+
+% 帐号
+    ERR_PWD_ERROR                       = 101,  %密码不正确
+    ERR_OTHER_LOGIN                     = 102,  %账号已在其他设备登录
+    ERR_CLOSURE                         = 103,  %账户已被封号
+    ERR_TERMINATE                       = 104,  %被T下线,与服务器断开连接
+    ERR_LOGIN_TOKNE_OUTDATE             = 105,  %token失效，请重新登录
+    ERR_ONLINE                          = 106,  %玩家在线
+    ERR_PLAYER_OFFLINE                  = 107,  %玩家下线
+    ERR_NOT_ONLINE                      = 108,  %该玩家已离线
+    ERR_RE_ONLINE                       = 109,  %重复登陆
+    ERR_NO_ACCOUNT                      = 110,  %账户不存在
+    ERR_EXIT_ACCOUNT                    = 111,  %账户已经存在
+
+% 参数
+    ERR_ARG_ERROR                       = 201,   %参数不正确
+    ERR_CHANNEL_ID                      = 202,   %渠道不正确
+    ERR_NOT_IN_SIZE                     = 203,   %参数不在范围内
+    ERR_BAD_SIGN                        = 204,   %签名不正确
+
+    ERR_ILLEGAL_CHATS                   = 205,   %参数中拥有非法字符
+    ERR_SENSITIVE_CHARACTER             = 206,   %含有敏感字符
+    ERR_MAX_SIZE                        = 207,   %?KEY不能超过?ERR_MAX_SIZE个字符
+    ERR_MIN_SIZE                        = 208,   %?KEY不能少于?ERR_MIN_SIZE个字符
+    ERR_ATTR_NOT_ENOUGH_NUM             = 209,   %没有足够的数量
+    ERR_NOT_BINARY                      = 210,   %参数需要是字符串
+    ERR_CONFIG_NO_DATA                  = 211,   %没有配置信息
+    ERR_PAGE_MAX_SIZE                   = 212,   %页数超过最大限制
+    ERR_PAGE_SIZE_ERR                   = 213,   %页数需要大于等于0
+
+
+% 数据库
+    ERR_NO_THIS_DATA                    = 301,   %没有查询到该数据
+    ERR_EXEC_SQL_ERR                    = 302,   %执行sql出错
+    ERR_NO_MYSQL_POOL                   = 303   %没有找到数据库链接
+
+}
+
