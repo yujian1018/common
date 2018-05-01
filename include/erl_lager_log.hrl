@@ -5,6 +5,8 @@
 %%% Created : 26. 四月 2016 下午4:55
 %%%-------------------------------------------------------------------
 
+-compile({parse_transform, lager_transform}).
+
 %% R16 suport color term
 -define(color_none, "\e[m").
 -define(color_red, "\e[1m\e[31m").
