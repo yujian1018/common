@@ -11,7 +11,8 @@
 
 -export([
     write/1,
-    read/2
+    read/2,
+    do/1, transaction/1
 ]).
 
 
@@ -21,3 +22,18 @@ write(VO) ->
 
 read(TabName, Key) ->
     mnesia:dirty_read(TabName, Key).
+
+
+do(Q) ->
+    F = fun() -> qlc:e(Q) end,
+    transaction(F).
+
+%%  @doc    事务
+transaction(F) ->
+    case mnesia:transaction(F) of
+        {atomic, Val} ->
+            Val;
+        Other ->
+            ?ERROR("transaction error:~p~n", [Other]),
+            {error, Other}
+    end.

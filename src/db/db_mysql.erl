@@ -29,19 +29,19 @@ execute(Pool, SQL) ->
 
 
 do_sql(Pool, Sql) ->
-    try emysql:execute(Pool, Sql, 30000) of
+    try emysql:execute(Pool, Sql) of
         {result_packet, _SeqNum, _FieldList, Rows, _Extra} ->
             Rows;
         {ok_packet, _SeqNum, _AffectedRows, InsertId, _Status, _WarningCount, _Msg} ->
             InsertId;
         {error_packet, _SeqNum, _Code, _Status, _Msg} ->
             ?ERROR("emysql error_packet:~p~nPool:~p...SQL:~p~n", [{error_packet, _SeqNum, _Code, _Status, _Msg}, Pool, Sql]),
-            {error, 'ERR_EXEC_SQL_ERR'};
+            ?return_err(?ERR_EXEC_SQL_ERR, 'ERR_EXEC_SQL_ERR');
         Packets ->
             case catch ret(Packets, []) of
                 {throw, 'ERR_EXEC_SQL_ERR'} ->
                     ?ERROR("emysql error POOL:~p...SQL:~ts~n", [Pool, Sql]),
-                    {error, 'ERR_EXEC_SQL_ERR'};
+                    ?return_err(?ERR_EXEC_SQL_ERR, 'ERR_EXEC_SQL_ERR');
                 Ret -> Ret
             end
     catch
