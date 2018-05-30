@@ -10,7 +10,7 @@
 -define(rpc_call(NODE, MOD, FUN, ARG), rpc:call(NODE, MOD, FUN, ARG, 10000)).
 -define(rpc_cast(NODE, MOD, FUN, ARG), rpc:cast(NODE, MOD, FUN, ARG)).
 
--define(rpc_db_call(MOD, FUN, ARG), rpc:call(?db_node, MOD, FUN, ARG, 10000)).
+-define(rpc_db_call(MOD, FUN, ARG), rpc:call(node(), MOD, FUN, ARG, 10000)).
 -define(rpc_db_cast(MOD, FUN, ARG), ?rpc_cast(?db_node, MOD, FUN, ARG)).
 -define(rpc_mgr_call(MOD, FUN, ARG), ?rpc_call(?mgr_node, MOD, FUN, ARG)).
 -define(rpc_mgr_cast(MOD, FUN, ARG), ?rpc_cast(?mgr_node, MOD, FUN, ARG)).

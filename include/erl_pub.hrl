@@ -9,7 +9,7 @@
 -include("erl_lager_log.hrl").
 -include("erl_verify.hrl").
 -include("erl_node.hrl").
--include("erl_pool.hrl").
+-include("erl_db.hrl").
 -include("../src/auto/def/def.hrl").
 
 
@@ -17,7 +17,6 @@
 -define(put(K, V), erlang:put(K, V)).
 -define(get(K), erlang:get(K)).
 
--define(ets_new(TabName, Pos), ets:new(TabName, [public, named_table, {keypos, Pos}, {read_concurrency, true}])).
 
 -ifdef(windows).
 

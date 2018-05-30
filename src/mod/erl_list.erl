@@ -6,6 +6,8 @@
 %%%-------------------------------------------------------------------
 -module(erl_list).
 
+-include("erl_pub.hrl").
+
 -export([
     lists_spawn/2,
     diff/3,
@@ -26,7 +28,14 @@ lists_spawn(Fun, Lists) ->
         end || _ <-
         [spawn(
             fun() ->
-                Res = Fun(I),
+                Res =
+                    try
+                        Fun(I)
+                    catch
+                        _Exit:_WHY ->
+                            ?ERROR("err:~p~n", [[_Exit, _WHY]]),
+                            {nomatch, {_Exit, _WHY}}
+                    end,
                 Pid ! {Ref, Res}
             end) || I <- Lists]
     ].

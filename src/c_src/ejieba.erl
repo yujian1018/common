@@ -17,7 +17,7 @@ init() ->
     erlang:load_nif(Path, 0).
 
 
--spec cut(_Bin :: binary, _Type :: 1|2|3|4|5|11|12) -> list().
+-spec cut(_Bin :: binary, _Type :: 1|2|3|4|5) -> list().
 % 1 -> METHOD_MP   最大概率法
 % 2 -> METHOD_HMM  隐式马尔科夫模型
 % 3 -> METHOD_MIX  混合模型

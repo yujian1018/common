@@ -9,7 +9,8 @@
 -export([
     get_mods/2,
     is_behaviour/2,
-    read_file/2
+    read_file/2,
+    dirs/1
 ]).
 
 
@@ -40,3 +41,11 @@ read_file(AppName, File) ->
     Pwd = code:lib_dir(AppName),
     {ok, Bin} = file:read_file(Pwd ++ File),
     Bin.
+
+
+dirs(Dir) -> dirs1(filename:split(Dir), "", []).
+dirs1([], _, Acc) -> lists:reverse(Acc);
+dirs1([H | T], "", []) -> dirs1(T, H, [H]);
+dirs1([H | T], Last, Acc) ->
+    Dir = filename:join(Last, H),
+    dirs1(T, Dir, [Dir | Acc]).

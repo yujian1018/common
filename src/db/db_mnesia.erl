@@ -26,7 +26,8 @@ read(TabName, Key) ->
 
 do(Q) ->
     F = fun() -> qlc:e(Q) end,
-    transaction(F).
+    {atomic, Val} = mnesia:transaction(F),
+    Val.
 
 %%  @doc    事务
 transaction(F) ->
