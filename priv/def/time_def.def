@@ -6,6 +6,7 @@ enum time_out
     TIMEOUT_S_10        = 10000:timeout_s_10,
     TIMEOUT_S_30        = 30000:timeout_s_30,
     TIMEOUT_MI_1        = 60000:timeout_mi_1,
+    TIMEOUT_MI_2        = 120000:timeout_mi_2,
     TIMEOUT_MI_3        = 180000:timeout_mi_3,
     TIMEOUT_MI_5        = 300000:timeout_mi_5,
     TIMEOUT_MI_30       = 1800000:timeout_mi_30,
