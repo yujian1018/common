@@ -33,35 +33,35 @@
 -ifdef(windows).
 
 -define(LAGER_START, error).
+-define(DEBUG(MSG),         io:format("[DEBUG] ~p [~s:~b ~w]~n"  MSG"~n", [calendar:local_time(), ?FILE, ?LINE, self()])).
+-define(DEBUG(FMT, ARGS),   io:format("[DEBUG] ~p [~s:~b ~w]~n"  FMT"~n", [calendar:local_time(), ?FILE, ?LINE, self() | ARGS])).
 -define(INFO(MSG),          io:format("[INFO] ~p [~s:~b ~w]~n"  MSG"~n", [calendar:local_time(), ?FILE, ?LINE, self()])).
 -define(INFO(FMT, ARGS),    io:format("[INFO] ~p [~s:~b ~w]~n"  FMT"~n", [calendar:local_time(), ?FILE, ?LINE, self() | ARGS])).
+-define(NOTICE(MSG),        io:format("[NOTICE] ~p [~s:~b ~w]~n"  MSG"~n", [calendar:local_time(), ?FILE, ?LINE, self()])).
+-define(NOTICE(FMT, ARGS),  io:format("[NOTICE] ~p [~s:~b ~w]~n"  FMT"~n", [calendar:local_time(), ?FILE, ?LINE, self() | ARGS])).
 -define(WARN(MSG),          io:format("[WARN] ~p [~s:~b ~w]~n"  MSG"~n", [calendar:local_time(), ?FILE, ?LINE, self()])).
 -define(WARN(FMT, ARGS),    io:format("[WARN] ~p [~s:~b ~w]~n"  FMT"~n", [calendar:local_time(), ?FILE, ?LINE, self() | ARGS])).
 -define(ERROR(MSG),         io:format("[ERROR] ~p [~s:~b ~w]~n"  MSG"~n", [calendar:local_time(), ?FILE, ?LINE, self()])).
 -define(ERROR(FMT, ARGS),   io:format("[ERROR] ~p [~s:~b ~w]~n" FMT"~n", [calendar:local_time(), ?FILE, ?LINE, self() | ARGS])).
--define(LOG(MSG),           io:format("[LOG] ~p [~s:~b ~w]~n"  MSG"~n", [calendar:local_time(), ?FILE, ?LINE, self()])).
--define(LOG(FMT, ARGS),     io:format("[LOG] ~p [~s:~b ~w]~n"  FMT"~n", [calendar:local_time(), ?FILE, ?LINE, self() | ARGS])).
--define(DEBUG(MSG),         io:format("[DEBUG] ~p [~s:~b ~w]~n"  MSG"~n", [calendar:local_time(), ?FILE, ?LINE, self()])).
--define(DEBUG(FMT, ARGS),   io:format("[DEBUG] ~p [~s:~b ~w]~n"  FMT"~n", [calendar:local_time(), ?FILE, ?LINE, self() | ARGS])).
--define(PRINT(MSG),         io:format("[PRINT] ~p [~s:~b ~w]~n"  MSG"~n", [calendar:local_time(), ?FILE, ?LINE, self()])).
--define(PRINT(FMT, ARGS),   io:format("[PRINT] ~p [~s:~b ~w]~n"  FMT"~n", [calendar:local_time(), ?FILE, ?LINE, self() | ARGS])).
+-define(ALERT(MSG),         io:format("[ALERT] ~p [~s:~b ~w]~n"  MSG"~n", [calendar:local_time(), ?FILE, ?LINE, self()])).
+-define(ALERT(FMT, ARGS),   io:format("[ALERT] ~p [~s:~b ~w]~n"  FMT"~n", [calendar:local_time(), ?FILE, ?LINE, self() | ARGS])).
 
 -else.
 
 %%-ifdef(linux).
 -define(LAGER_START,        lager:start()).
+-define(DEBUG(MSG),         lager:debug("[DEBUG] ~p [~s:~b ~w]~n"  MSG"~n", [calendar:local_time(), ?FILE, ?LINE, self()])).
+-define(DEBUG(FMT, ARGS),   lager:debug("[DEBUG] ~p [~s:~b ~w]~n"  FMT"~n", [calendar:local_time(), ?FILE, ?LINE, self() | ARGS])).
 -define(INFO(MSG),          lager:info("[INFO] ~p [~s:~b ~w]~n"  MSG, [calendar:local_time(), ?FILE, ?LINE, self()])).
 -define(INFO(FMT, ARGS),    lager:info("[INFO] ~p [~s:~b ~w]~n"  FMT, [calendar:local_time(), ?FILE, ?LINE, self() | ARGS])).
+-define(NOTICE(MSG),        lager:notice("[NOTICE] ~p [~s:~b ~w]~n"  MSG"~n", [calendar:local_time(), ?FILE, ?LINE, self()])).
+-define(NOTICE(FMT, ARGS),  lager:notice("[NOTICE] ~p [~s:~b ~w]~n"  FMT"~n", [calendar:local_time(), ?FILE, ?LINE, self() | ARGS])).
 -define(WARN(MSG),          lager:warning("[WARN] ~p [~s:~b ~w]~n"  MSG"~n", [calendar:local_time(), ?FILE, ?LINE, self()])).
 -define(WARN(FMT, ARGS),    lager:warning("[WARN] ~p [~s:~b ~w]~n"  FMT"~n", [calendar:local_time(), ?FILE, ?LINE, self() | ARGS])).
 -define(ERROR(MSG),         lager:error("[ERROR] ~p [~s:~b ~w]~n"  MSG"~n", [calendar:local_time(), ?FILE, ?LINE, self()])).
 -define(ERROR(FMT, ARGS),   lager:error("[ERROR] ~p [~s:~b ~w]~n"  FMT"~n", [calendar:local_time(), ?FILE, ?LINE, self() | ARGS])).
--define(LOG(MSG),           lager:notice("[LOG] ~p [~s:~b ~w]~n"  MSG"~n", [calendar:local_time(), ?FILE, ?LINE, self()])).
--define(LOG(FMT, ARGS),     lager:notice("[LOG] ~p [~s:~b ~w]~n"  FMT"~n", [calendar:local_time(), ?FILE, ?LINE, self() | ARGS])).
--define(DEBUG(MSG),         lager:debug("[DEBUG] ~p [~s:~b ~w]~n"  MSG"~n", [calendar:local_time(), ?FILE, ?LINE, self()])).
--define(DEBUG(FMT, ARGS),   lager:debug("[DEBUG] ~p [~s:~b ~w]~n"  FMT"~n", [calendar:local_time(), ?FILE, ?LINE, self() | ARGS])).
--define(PRINT(MSG),         lager:notice("[PRINT] ~p [~s:~b ~w]~n"  MSG"~n", [calendar:local_time(), ?FILE, ?LINE, self()])).
--define(PRINT(FMT, ARGS),   lager:notice("[PRINT] ~p [~s:~b ~w]~n"  FMT"~n", [calendar:local_time(), ?FILE, ?LINE, self() | ARGS])).
+-define(ALERT(MSG),         lager:notice("[ALERT] ~p [~s:~b ~w]~n"  MSG"~n", [calendar:local_time(), ?FILE, ?LINE, self()])).
+-define(ALERT(FMT, ARGS),   lager:notice("[ALERT] ~p [~s:~b ~w]~n"  FMT"~n", [calendar:local_time(), ?FILE, ?LINE, self() | ARGS])).
 
 -endif.
 
