@@ -7,7 +7,12 @@
 
 -on_load(init/0).
 
--export([cut/2, target/1, keyword/1]).
+-export([
+    cut/2,
+    target/1,
+    keyword/1,
+    set_userword/2
+]).
 
 init() ->
     Path = case code:lib_dir(common, priv) of
@@ -21,8 +26,8 @@ init() ->
 % 1 -> METHOD_MP   最大概率法
 % 2 -> METHOD_HMM  隐式马尔科夫模型
 % 3 -> METHOD_MIX  混合模型
-% 4 -> METHOD_FULL 全模式
-% 5 -> METHOD_QUERY 索引模型
+% 4 -> METHOD_FULL 全模式      我来到北京清华大学 -> 我/来到/北京/清华/清华大学/华大/大学
+% 5 -> METHOD_QUERY 索引模型   我来到北京清华大学 -> 我/来到/北京/清华/清华大学/华大/大学
 
 cut(_Bin, _Type) ->
     erlang:error({"NIF not implemented in ejieba at line", ?LINE}).
@@ -33,4 +38,8 @@ target(_Bin) ->
 
 %% 关键词抽取
 keyword(_Bin) ->
+    erlang:error({"NIF not implemented in ejieba at line", ?LINE}).
+
+%% @doc 插入新词
+set_userword(_Word, _Tag) ->
     erlang:error({"NIF not implemented in ejieba at line", ?LINE}).

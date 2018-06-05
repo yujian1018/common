@@ -95,6 +95,28 @@ static ERL_NIF_TERM target(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
 
 static ERL_NIF_TERM keyword(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
 {
+    ErlNifBinary word, tag;
+    enif_inspect_binary(env, argv[0], &word);
+    enif_inspect_binary(env, argv[1], &tag);
+
+    char *s = new char[word.size + 1];
+    char *tagStr = new char[tag.size + 1];
+
+    memcpy(s, word.data, word.size);
+    memcpy(tagStr, tag.data, tag.size);
+    s[word.size] = '\0';
+    tagStr[tag.size] = '\0';
+
+    app.InsertUserWord(s, tagStr);
+
+    delete [] s;
+    delete [] tagStr;
+
+    return  enif_make_atom(env, "true");
+}
+
+static ERL_NIF_TERM set_userword(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
+{
     ErlNifBinary bin;
     enif_inspect_binary(env, argv[0], &bin);
 
@@ -134,7 +156,8 @@ static ErlNifFunc nif_funcs[] =
 {
     {"cut", 2, cut},
     {"target", 1, target},
-    {"keyword", 1, keyword}
+    {"keyword", 1, keyword},
+    {"set_userword", 2, set_userword}
 };
 }
 ERL_NIF_INIT(ejieba,nif_funcs,NULL,NULL,NULL,NULL)
