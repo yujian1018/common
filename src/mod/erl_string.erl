@@ -15,7 +15,9 @@
 
 -export([
     all_to_binary/1,    %转译 mysql关键字' 单引号
-    binary_to_all/1
+    binary_to_all/1,
+    
+    term_to_bin/1
 ]).
 
 %%| 41 bits: Timestamp | 3 bits: 区域 | 10 bits: 机器编号 | 10 bits: 序列号 |
@@ -72,6 +74,7 @@ sql(Values) ->
         NewValue =
             if
                 is_integer(Value) -> integer_to_binary(Value);
+                Value =:= undefined -> <<>>;
                 true -> Value
             end,
         if
@@ -82,7 +85,7 @@ sql(Values) ->
     Sql = lists:foldl(FunFoldl, <<>>, Values),
     <<"(", Sql/binary, ")">>.
 
--define(ILLEGAL_CHARACTER, [<<"'">>, <<"`">>]).
+-define(ILLEGAL_CHARACTER, [<<"'">>, <<"`">>, <<";">>,<<"/*">>, <<"#">>, <<"--">>]).
 illegal_character(K) -> illegal_character(K, ?ILLEGAL_CHARACTER).
 
 illegal_character(_K, []) -> true;
@@ -91,3 +94,32 @@ illegal_character(K, [Char | Chars]) ->
         nomatch -> illegal_character(K, Chars);
         _ -> false
     end.
+
+term_to_bin(Args) when is_list(Args) ->
+    FunFoldl =
+        fun(Arg, Acc) ->
+            NewArg = term_to_bin(Arg),
+            if
+                Acc =:= <<>> -> NewArg;
+                true -> <<Acc/binary, ",", NewArg/binary>>
+            end
+        end,
+    NewArg = lists:foldl(FunFoldl, <<>>, Args),
+    <<"[", NewArg/binary, "]">>;
+
+term_to_bin(Args) when is_tuple(Args) ->
+    FunFoldl =
+        fun(Arg, Acc) ->
+            NewArg = term_to_bin(Arg),
+            if
+                Acc =:= <<>> -> NewArg;
+                true -> <<Acc/binary, ",", NewArg/binary>>
+            end
+        end,
+    NewArg = lists:foldl(FunFoldl, <<>>, tuple_to_list(Args)),
+    <<"{", NewArg/binary, "}">>;
+
+term_to_bin(undefined) -> <<>>;
+term_to_bin(Arg) when is_atom(Arg) -> atom_to_binary(Arg, utf8);
+term_to_bin(Arg) when is_integer(Arg) -> integer_to_binary(Arg);
+term_to_bin(Arg) when is_binary(Arg) -> Arg.
