@@ -11,7 +11,7 @@
     cut/2,
     target/1,
     keyword/1,
-    set_userword/2
+    add_word/2
 ]).
 
 init() ->
@@ -41,5 +41,5 @@ keyword(_Bin) ->
     erlang:error({"NIF not implemented in ejieba at line", ?LINE}).
 
 %% @doc 插入新词
-set_userword(_Word, _Tag) ->
+add_word(_Word, _Tag) ->
     erlang:error({"NIF not implemented in ejieba at line", ?LINE}).

@@ -68,7 +68,7 @@ class Jieba {
   string LookupTag(const string &str) const {
     return mix_seg_.LookupTag(str);
   }
-  bool InsertUserWord(const string& word, const string& tag = UNKNOWN_TAG) {
+  bool InsertUserWord(const string& word, const string& tag) {
     return dict_trie_.InsertUserWord(word, tag);
   }
 
