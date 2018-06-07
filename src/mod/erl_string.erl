@@ -85,7 +85,7 @@ sql(Values) ->
     Sql = lists:foldl(FunFoldl, <<>>, Values),
     <<"(", Sql/binary, ")">>.
 
--define(ILLEGAL_CHARACTER, [<<"'">>, <<"`">>, <<";">>,<<"/*">>, <<"#">>, <<"--">>]).
+-define(ILLEGAL_CHARACTER, [<<"'">>, <<"`">>, <<";">>, <<"/*">>, <<"#">>, <<"--">>]).
 illegal_character(K) -> illegal_character(K, ?ILLEGAL_CHARACTER).
 
 illegal_character(_K, []) -> true;

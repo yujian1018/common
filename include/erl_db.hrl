@@ -14,9 +14,9 @@
 -define(pool_redis_1, pool_redis_1).
 
 
--define(mnesia_new(TabName, CacheCopies), mnesia:create_table(TabName, [{CacheCopies, [node()]}, {attributes, record_info(fields, TabName)}])).
 -define(mnesia_new(TabName, CacheCopies, Fields), mnesia:create_table(TabName, [{CacheCopies, [node()]}, {attributes, Fields}])).
--define(mnesia_new(TabName, CacheCopies, TabType, Fields), mnesia:create_table(TabName, [{CacheCopies, [node()]}, {type, TabType}, {attributes, Fields}])).
+-define(mnesia_new(TabName, CacheCopies, Type, Fields, Indexs), mnesia:create_table(TabName, [{CacheCopies, [node()]}, {type, Type}, {attributes, Fields}, {index, Indexs}])).
+
 
 -define(ets_new(TabName, Pos), ets:new(TabName, [public, named_table, {keypos, Pos}, {read_concurrency, true}])).
 -define(ets_new(TabName, Pos, TabType), ets:new(TabName, [public, named_table, TabType, {keypos, Pos}, {read_concurrency, true}])).
