@@ -1,10 +1,11 @@
 %%%-------------------------------------------------------------------
-%%% @author yujian
+%%% @author yj
 %%% @doc
 %%%
-%%% Created : 11. 五月 2016 下午12:56
+%%% Created : 11. 六月 2018 下午3:45
 %%%-------------------------------------------------------------------
--module(erl_string).
+-module(erl_bin).
+
 
 -export([
     uuid_int/0, uuid_bin/0, order_id/0,
@@ -120,6 +121,8 @@ term_to_bin(Args) when is_tuple(Args) ->
     <<"{", NewArg/binary, "}">>;
 
 term_to_bin(undefined) -> <<>>;
+term_to_bin(Arg) when is_map(Arg) -> term_to_bin(maps:values(Arg));
 term_to_bin(Arg) when is_atom(Arg) -> atom_to_binary(Arg, utf8);
 term_to_bin(Arg) when is_integer(Arg) -> integer_to_binary(Arg);
 term_to_bin(Arg) when is_binary(Arg) -> Arg.
+

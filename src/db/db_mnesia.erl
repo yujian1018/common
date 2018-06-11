@@ -12,7 +12,8 @@
 -export([
     write/1,
     read/2,
-    do/1, transaction/1
+    do/1, transaction/1,
+    foldl_record/3
 ]).
 
 
@@ -37,4 +38,14 @@ transaction(F) ->
         Other ->
             ?ERROR("transaction error:~p~n", [Other]),
             {error, Other}
+    end.
+
+
+foldl_record(Fun, Tab, Index) ->
+    case mnesia:dirty_slot(Tab, Index) of
+        '$end_of_table' ->
+            ok;
+        L ->
+            lists:foreach(fun(I) -> Fun(I) end, L),
+            foldl_record(Fun, Tab, Index + 1)
     end.

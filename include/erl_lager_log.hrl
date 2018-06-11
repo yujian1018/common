@@ -45,7 +45,6 @@
 -define(ERROR(FMT, ARGS),   io:format("[ERROR] ~p [~s:~b ~w]~n" FMT"~n", [calendar:local_time(), ?FILE, ?LINE, self() | ARGS])).
 -else.
 
-%%-ifdef(linux).
 -define(LAGER_START,        lager:start()).
 -define(DEBUG(MSG),         io:format("\e[0;35m[DEBUG] ~p [~s:~b ~w]~n"  MSG"~n\e[m\n", [calendar:local_time(), ?FILE, ?LINE, self()])).
 -define(DEBUG(FMT, ARGS),   io:format("\e[0;35m[DEBUG] ~p [~s:~b ~w]~n"  FMT"~n\e[m\n", [calendar:local_time(), ?FILE, ?LINE, self() | ARGS])).
