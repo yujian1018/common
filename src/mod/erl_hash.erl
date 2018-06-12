@@ -6,7 +6,7 @@
 -module(erl_hash).
 
 -export([
-    md5/1, md5_to_str/1, md5_to_bin/1,
+    md5/1, md5_bin/1,
     
     sha1/1, sha1_bin/1
 
@@ -25,11 +25,7 @@ md5(S) ->
         true -> Hex
     end.
 
-md5_to_str(Str) ->
-    md5(Str).
-
-
-md5_to_bin(Str) ->
+md5_bin(Str) ->
     <<M:128/big-unsigned-integer>> = erlang:md5(Str),
     Hex = erlang:integer_to_binary(M, 16),
     Len = byte_size(Hex),

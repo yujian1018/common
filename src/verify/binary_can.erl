@@ -22,7 +22,7 @@
 ]).
 
 
--define(ILLEGAL_CHARACTER, [<<"'">>, <<"`">>, <<"/*">>]).
+-define(ILLEGAL_CHARACTER, [<<"'">>, <<"`">>, <<";">>, <<"/*">>, <<"#">>, <<"--">>]).
 
 illegal(Binary) ->
     case illegal_character(Binary, ?ILLEGAL_CHARACTER) of
