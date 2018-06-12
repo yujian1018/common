@@ -6,13 +6,13 @@
 %%%-------------------------------------------------------------------
 -module(erl_bin).
 
-
 -export([
     uuid/0, uuid_bin/0, order_id/0,
-    sql/1,
     
+    sql/1,
     all_to_binary/1,    %转译 mysql关键字' 单引号
     binary_to_all/1,
+    mysql_encode/1, mysql_decode/1,
     
     term_to_bin/1
 ]).
@@ -55,6 +55,30 @@ order_id() ->
     <<(FunTime(Y))/binary, (FunTime(Mo))/binary, (FunTime(D))/binary, (FunTime(H))/binary, (FunTime(Mi))/binary, (FunTime(S))/binary,
         NewMs/binary, Rand/binary, Rand2/binary>>.
 
+
+mysql_encode(Arg) -> encode(term_to_binary(Arg), []).
+mysql_decode(Msg) -> decode(Msg, []).
+
+
+encode(<<>>, List) -> iolist_to_binary(lists:reverse(List));
+encode(<<0:8, R/binary>>, List) -> encode(R, [<<"\\0">> | List]);
+encode(<<92:8, R/binary>>, List) -> encode(R, [<<"\\\\">> | List]);
+encode(<<10:8, R/binary>>, List) -> encode(R, [<<"\\n">> | List]);
+encode(<<13:8, R/binary>>, List) -> encode(R, [<<"\\r">> | List]);
+encode(<<39:8, R/binary>>, List) -> encode(R, [<<"\\'">> | List]);
+encode(<<34:8, R/binary>>, List) -> encode(R, [<<"\\\"">> | List]);
+encode(<<26:8, R/binary>>, List) -> encode(R, [<<"\\Z">> | List]);
+encode(<<I:8, R/binary>>, List) -> encode(R, [I | List]).
+
+decode(<<>>, List) -> iolist_to_binary(lists:reverse(List));
+decode(<<"\\0", R/binary>>, List) -> decode(R, [0 | List]);
+decode(<<"\\\\", R/binary>>, List) -> decode(R, [92 | List]);
+decode(<<"\\n", R/binary>>, List) -> decode(R, [10 | List]);
+decode(<<"\\r", R/binary>>, List) -> decode(R, [13 | List]);
+decode(<<"\\'", R/binary>>, List) -> decode(R, [39 | List]);
+decode(<<"\\\"", R/binary>>, List) -> decode(R, [34 | List]);
+decode(<<"\\Z", R/binary>>, List) -> decode(R, [26 | List]);
+decode(<<I:8, R/binary>>, List) -> decode(R, [I | List]).
 
 all_to_binary(Msg) ->
     binary:replace(term_to_binary(Msg), <<"'">>, <<"\\'">>, [global]).

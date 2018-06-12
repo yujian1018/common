@@ -8,10 +8,9 @@
 
 -include("erl_pub.hrl").
 
--compile(export_all).
-
 -export([
-    token/0
+    token/0,
+    set_user/3, get_user/2, del_user/2, get_msg/2, send_msg/4, his_msg/2
 ]).
 
 -define(APP_KEY, <<"111#happyjob">>).
