@@ -20,7 +20,7 @@
     
     time2timer/1, timer2time/1,
     
-    index_week/0, index_week/1,
+    weekday/0, weekday/1,
     is_yesterday/3
 ]).
 
@@ -39,7 +39,7 @@ zero_times() ->
     end.
 
 now_week() ->
-    Week = index_week(),
+    Week = weekday(),
     ZeroTime = zero_times(),
     ZeroTime - (Week - 1) * (60 * 60 * 24).
 
@@ -108,8 +108,8 @@ times_in_month(Times) ->
     end.
 
 
-index_week() -> calendar:day_of_the_week(erlang:date()).
-index_week(Date) -> calendar:day_of_the_week(Date).
+weekday() -> calendar:day_of_the_week(erlang:date()).
+weekday(Date) -> calendar:day_of_the_week(Date).
 
 is_yesterday(RefreshTimes, _GMTOffset, ConfigTimes) ->
 %%    DiffTime =
