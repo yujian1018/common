@@ -14,7 +14,8 @@
     diff_kv/3,
     foldl/4,
     map/3, map_break/2,
-    set_element/2
+    set_element/2,
+    keyfind_jiffy/2
 ]).
 
 
@@ -83,3 +84,17 @@ set_element(Fun, Lists) -> set_element(Fun, Lists, []).
 
 set_element(_Fun, [], ListsAcc) -> lists:reverse(ListsAcc);
 set_element(Fun, [H | R], ListsAcc) -> set_element(Fun, R, [Fun(H) | ListsAcc]).
+
+
+
+keyfind_jiffy([H], List) ->
+    case lists:keyfind(H, 1, List) of
+        false -> false;
+        {_, Val} -> Val
+    end;
+
+keyfind_jiffy([H | R], List) ->
+    case lists:keyfind(H, 1, List) of
+        false -> false;
+        {_, {Val}} -> keyfind_jiffy(R, Val)
+    end.

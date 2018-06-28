@@ -8,7 +8,10 @@
 -export([
     md5/1, md5_bin/1,
     
-    sha1/1, sha1_bin/1
+    sha1/1, sha1_bin/1,
+    
+    hash/2,
+    hmac/3
 
 ]).
 
@@ -54,3 +57,25 @@ sha1_bin(Bin) ->
         Len =:= 39 -> <<"0", Hex/binary>>;
         true -> Hex
     end.
+
+hash(sha256, Bin) ->
+    <<M:256/big-unsigned-integer>> = crypto:hash(sha256, Bin),
+    Hex = erlang:integer_to_binary(M, 16),
+    Len = byte_size(Hex),
+    if
+        Len =:= 64 -> Hex;
+        Len =:= 63 -> <<"0", Hex/binary>>;
+        true -> Hex
+    end.
+
+hmac(Type, Key, Bin) ->
+    <<M:256/big-unsigned-integer>> = crypto:hmac(Type, Key, Bin),
+    Hex = erlang:integer_to_binary(M, 16),
+    Len = byte_size(Hex),
+    if
+        Len =:= 64 -> Hex;
+        Len =:= 63 -> <<"0", Hex/binary>>;
+        true -> Hex
+    end.
+
+
