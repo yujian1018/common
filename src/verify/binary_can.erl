@@ -24,13 +24,13 @@
 
 -define(ILLEGAL_CHARACTER, [<<"'">>, <<"`">>, <<";">>, <<"/*">>, <<"#">>, <<"--">>]).
 
-illegal(Binary) ->
-    case illegal_character(Binary, ?ILLEGAL_CHARACTER) of
-        true ->
-            Binary;
-        false ->
-            ?return_err(?ERR_ILLEGAL_CHATS)
-    end.
+illegal(Bin) when erlang:is_binary(Bin) ->
+    case illegal_character(Bin, ?ILLEGAL_CHARACTER) of
+        true -> Bin;
+        false -> ?return_err(?ERR_ILLEGAL_CHATS)
+    end;
+illegal(Bin) -> Bin.
+
 
 illegal_character(Binary) -> illegal_character(Binary, ?ILLEGAL_CHARACTER).
 illegal_character(_K, []) -> true;
