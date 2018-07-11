@@ -23,6 +23,8 @@
 
 -module(iconv).
 
+-compile(no_native).
+
 -on_load(init/0).
 
 -export([convert/3]).
