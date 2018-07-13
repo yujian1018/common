@@ -2,7 +2,7 @@
 %%% @author yujian
 %%% @doc
 %%%-------------------------------------------------------------------
--module(erl_file).
+-module(t_file).
 
 -compile(export_all).
 

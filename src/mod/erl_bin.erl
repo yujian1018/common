@@ -18,7 +18,7 @@
 ]).
 
 
-%%| 41 bits: Timestamp | 3 bits: 区域 | 10 bits: 机器编号 | 10 bits: 序列号 |
+%%| 41 bits: Timestamp | 3 bits: 区域 | 10 bits: 机器编号 | 10 bits: 自增序号 |
 uuid() ->
     {MegaSecs, Secs, MicroSecs} = os:timestamp(),
     Timers = MegaSecs * 1000000000000 + Secs * 1000000 + MicroSecs,
