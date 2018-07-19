@@ -14,11 +14,11 @@
 
 is_t2t(Data, TypeFrom, TypeTo) ->
     try t2t(Data, TypeFrom, TypeTo) of
-        error -> ?return_err(?ERR_CONVERT_TYPE_FAIL);
+        error -> ?return_err(?ERR_INVALID_CONVERT_TYPE);
         NewData -> {ok, NewData}
     catch
         _C:_W ->
-            ?return_err(?ERR_CONVERT_TYPE_FAIL)
+            ?return_err(?ERR_INVALID_CONVERT_TYPE)
     end.
 
 t2t(Data, ?list, ?integer) ->
@@ -32,7 +32,7 @@ t2t(Data, ?binary, ?integer) ->
 
 is_type(Type, Data) ->
     case check_type(Type, Data) of
-        false -> ?return_err(?ERR_TYPE_ERROR);
+        false -> ?return_err(?ERR_INVALID_TYPE);
         true -> Data
     end.
 

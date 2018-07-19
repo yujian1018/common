@@ -10,7 +10,7 @@
 -include("erl_verify.hrl").
 -include("erl_node.hrl").
 -include("erl_db.hrl").
--include("../src/auto/def/def.hrl").
+-include("../src/_auto/def/def.hrl").
 
 
 -define(put_new(K, V), erlang:put(K, V)). %初始化进程字典，和erlang:put/2区分 开
@@ -20,9 +20,9 @@
 
 -ifdef(windows).
 
--define(encode(Rfc4627Data), list_to_binary(rfc4627:encode(Rfc4627Data))).
+-define(encode(Rfc4627Data), list_to_binary(jsx:encode(Rfc4627Data))).
 -define(decode(Rfc4627Data),
-    case rfc4627:decode(Rfc4627Data) of
+    case jsx:decode(Rfc4627Data) of
         {ok, {obj, Rfc4627Obj}, []} ->
             Rfc4627Obj;
         {ok, Rfc4627Obj, []} ->

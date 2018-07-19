@@ -143,7 +143,7 @@ terminate(_Reason, _State) ->
                 fun(Pid, Acc) ->
                     case is_process_alive(Pid) of
                         true ->
-                            ?send_to_client(Pid, {stop, ?ERR_MAINTAIN});
+                            ?send_to_client(Pid, {stop, ?ERR_MAINTAIN_SYSTEM});
                         false ->
                             ok
                     end,

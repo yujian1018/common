@@ -15,7 +15,7 @@
 ]).
 
 %% @doc 存在进程字典
-exit_pro_dict(Key) -> exit_pro_dict(Key, true, ?ERR_NOT_EXIT_PRO_DICT).
+exit_pro_dict(Key) -> exit_pro_dict(Key, true, ?ERR_NOTEXIT_PRO_DICT).
 exit_pro_dict(Key, true, ErrCode) ->
     case erlang:get(Key) of
         undefined -> ?return_err(ErrCode);
@@ -28,7 +28,7 @@ exit_pro_dict(Key, false, ErrCode) ->
     end.
 
 
-exit_process(Pid) -> exit_process(Pid, true, ?ERR_NOT_EXIT_PROCESS).
+exit_process(Pid) -> exit_process(Pid, true, ?ERR_NOTEXIT_PROCESS).
 exit_process(Pid, true, ErrCode) ->
     case is_pid(Pid) of
         true ->

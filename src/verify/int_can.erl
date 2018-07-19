@@ -20,16 +20,16 @@ natural_num(Int) ->
         true ->
             case Int >= 0 of
                 true -> Int;
-                false -> ?return_err(?ERR_NOT_NATURAL_NUM)
+                false -> ?return_err(?ERR_INVALID_NATURAL_NUM)
             end;
         false ->
-            ?return_err(?ERR_NOT_INTEGER)
+            ?return_err(?ERR_INVALID_NATURAL_NUM)
     end.
 
 is_int(Int) ->
     case is_integer(Int) of
         true -> Int;
-        false -> ?return_err(?ERR_NOT_INTEGER)
+        false -> ?return_err(?ERR_INVALID_INTEGER)
     end.
 
 min_max(Key, Min, Max) ->

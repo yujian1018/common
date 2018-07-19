@@ -25,7 +25,7 @@ size(Page, PageSize, MaxPage) ->
                     {SIndex, PageSize}
             end;
         _ ->
-            ?return_err(?ERR_NOT_INTEGER)
+            ?return_err(?ERR_INVALID_INTEGER)
     end.
 
 page_index(Page, PageSize, MaxPage) ->
@@ -40,7 +40,7 @@ page_index(Page, PageSize, MaxPage) ->
                     {SIndex, EIndex}
             end;
         _ ->
-            ?return_err(?ERR_NOT_INTEGER)
+            ?return_err(?ERR_INVALID_INTEGER)
     end.
 
 index(CPageIndex, PageSize, MaxPage) ->
@@ -52,5 +52,5 @@ index(CPageIndex, PageSize, MaxPage) ->
                 true -> ?return_err(?ERR_PAGE_MAX_SIZE)
             end;
         _ ->
-            ?return_err(?ERR_NOT_INTEGER)
+            ?return_err(?ERR_INVALID_INTEGER)
     end.

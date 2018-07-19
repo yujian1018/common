@@ -12,7 +12,11 @@
 
 find([], V) -> V;
 find([H | R], Maps) ->
-    K = binary_to_atom(H, 'utf8'),
+    K =
+        if
+            is_binary(H) -> binary_to_atom(H, 'utf8');
+            true -> H
+        end,
     case maps:find(K, Maps) of
         {ok, V} -> find(R, V);
         _ -> <<>>

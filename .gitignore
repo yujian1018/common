@@ -1,6 +1,6 @@
-ebin/
-.rebar/
-src/auto
+ebin
+.rebar
+_auto
 erl_crash.dump
 
 *.so

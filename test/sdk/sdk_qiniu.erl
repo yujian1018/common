@@ -6,7 +6,7 @@
 %%%-------------------------------------------------------------------
 -module(sdk_qiniu).
 
--include("erl_pub.hrl").
+-include("http_pub.hrl").
 
 -export([
     post/1,
@@ -15,14 +15,15 @@
 
 
 -define(AK, <<"111">>).
--define(SK, <<"222">>).
+-define(SK, <<"DbL-222">>).
 
--define(FILE_URL, <<"111">>).
--define(SCOPE, <<"222">>).
+-define(FILE_URL, <<"http://otbyaomht.bkt.clouddn.com/">>).
+-define(SCORE, <<"fk-dz">>).
+-define(UPLOAD_URL, "http://up-z2.qiniu.com").
 
 up_token() ->
     Deadline = erl_time:now() + 3600,
-    Arg = <<"{\"scope\":\"", ?SCOPE/binary, "\",\"deadline\":", (integer_to_binary(Deadline))/binary, "}">>,
+    Arg = <<"{\"scope\":\"", (?SCORE)/binary, "\",\"deadline\":", (integer_to_binary(Deadline))/binary, "}">>,
     Key = erl_httpc:urlsafe_base64(Arg),
     Sign = erl_httpc:urlsafe_base64(crypto:hmac(sha, ?SK, Key)),
     <<(?AK)/binary, ":", Sign/binary, ":", Key/binary>>.
@@ -37,7 +38,7 @@ post(Content) ->
     Body = format_multipart_formdata(Boundary, UpToken, Content),
     ContentType = binary_to_list(<<"multipart/form-data; boundary=", Boundary/binary>>),
     Headers = [{"Content-Length", byte_size(Body)}],
-    case erl_httpc:post("http://up-z0.qiniu.com", Headers, ContentType, Body) of
+    case erl_httpc:post(?UPLOAD_URL, Headers, ContentType, Body) of
         {ok, Json} ->
             {KeyList} = jiffy:decode(Json),
             case lists:keyfind(<<"key">>, 1, KeyList) of

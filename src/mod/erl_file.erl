@@ -6,6 +6,8 @@
 %%%-------------------------------------------------------------------
 -module(erl_file).
 
+-include("erl_pub.hrl").
+
 -export([
     get_mods/2,
     is_behaviour/2,
@@ -15,22 +17,25 @@
 
 
 get_mods(AppName, Behaviour) ->
-    Pwd = code:lib_dir(AppName, ebin),
-    {ok, FileNames} = file:list_dir(Pwd),
-    lists:foldl(
-        fun(FileName, ModAcc) ->
-            case lists:reverse(FileName) of
-                "maeb." ++ R ->
-                    Mod = list_to_atom(lists:reverse(R)),
-                    case is_behaviour(Mod, Behaviour) of
-                        true -> [Mod | ModAcc];
-                        false -> ModAcc
-                    end;
-                _R -> ModAcc
-            end
-        end,
-        [],
-        FileNames).
+    case code:lib_dir(AppName, ebin) of
+        {error, _Err} -> ?ERROR("no app:~p~n", [AppName]),[];
+        Pwd ->
+            {ok, FileNames} = file:list_dir(Pwd),
+            lists:foldl(
+                fun(FileName, ModAcc) ->
+                    case lists:reverse(FileName) of
+                        "maeb." ++ R ->
+                            Mod = list_to_atom(lists:reverse(R)),
+                            case is_behaviour(Mod, Behaviour) of
+                                true -> [Mod | ModAcc];
+                                false -> ModAcc
+                            end;
+                        _R -> ModAcc
+                    end
+                end,
+                [],
+                FileNames)
+    end.
 
 
 is_behaviour(Mod, Behaviour) ->

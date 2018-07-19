@@ -35,7 +35,7 @@ get(Key, MaxCountNum, MaxDiffTime) ->
                                     set_count(Key, Counter + 1),
                                     ?true;
                                 true ->
-                                    ?return_err(?ERR_HIGH_FREQUENCY_ACCESS)
+                                    ?return_err(?ERR_LIMIT_API)
                             end
                     end
             end
