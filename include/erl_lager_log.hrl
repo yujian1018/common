@@ -68,10 +68,10 @@
 -define(NOTICE(MSG),        io:format("\e[1m\e[34m[NOTICE] ~p [~s:~b ~w]~n"  MSG"~n\e[m\n", [calendar:local_time(), ?FILE, ?LINE, self()])).
 -define(NOTICE(FMT, ARGS),  io:format("\e[1m\e[34m[NOTICE] ~p [~s:~b ~w]~n"  FMT"~n\e[m\n", [calendar:local_time(), ?FILE, ?LINE, self() | ARGS])).
 
--define(WARN(MSG),          io:format("\e[1m\e[33m[WARN] ~p [~s:~b ~w]~n"  MSG"~n\e[m\n", [calendar:local_time(), ?FILE, ?LINE, self()])).
--define(WARN(FMT, ARGS),    io:format("\e[1m\e[33m[WARN] ~p [~s:~b ~w]~n"  FMT"~n\e[m\n", [calendar:local_time(), ?FILE, ?LINE, self() | ARGS])).
--define(ERROR(MSG),         io:format("\e[1m\e[31m[ERROR] ~p [~s:~b ~w]~n"  MSG"~n\e[m\n", [calendar:local_time(), ?FILE, ?LINE, self()])).
--define(ERROR(FMT, ARGS),   io:format("\e[1m\e[31m[ERROR] ~p [~s:~b ~w]~n"  FMT"~n\e[m\n", [calendar:local_time(), ?FILE, ?LINE, self() | ARGS])).
+-define(WARN(MSG),          lager:warning("\e[1m\e[33m[WARN] ~p [~s:~b ~w]~n"  MSG"~n\e[m\n", [calendar:local_time(), ?FILE, ?LINE, self()])).
+-define(WARN(FMT, ARGS),    lager:warning("\e[1m\e[33m[WARN] ~p [~s:~b ~w]~n"  FMT"~n\e[m\n", [calendar:local_time(), ?FILE, ?LINE, self() | ARGS])).
+-define(ERROR(MSG),         lager:error("\e[1m\e[31m[ERROR] ~p [~s:~b ~w]~n"  MSG"~n\e[m\n", [calendar:local_time(), ?FILE, ?LINE, self()])).
+-define(ERROR(FMT, ARGS),   lager:error("\e[1m\e[31m[ERROR] ~p [~s:~b ~w]~n"  FMT"~n\e[m\n", [calendar:local_time(), ?FILE, ?LINE, self() | ARGS])).
 
 -endif.
 
