@@ -8,13 +8,12 @@
 
 -export([
     uuid/0, uuid_bin/0, order_id/0,
-    
-    sql/1,
-    all_to_binary/1,    %转译 mysql关键字' 单引号
-    binary_to_all/1,
-    mysql_encode/1, mysql_decode/1,
-    
-    term_to_bin/1
+
+    sql/1, mysql_encode/1, mysql_decode/1, %转译 mysql关键字' 单引号
+
+    term_to_bin/1,
+
+    to_lower/1, to_upper/1
 ]).
 
 
@@ -80,12 +79,6 @@ decode(<<"\\\"", R/binary>>, List) -> decode(R, [34 | List]);
 decode(<<"\\Z", R/binary>>, List) -> decode(R, [26 | List]);
 decode(<<I:8, R/binary>>, List) -> decode(R, [I | List]).
 
-all_to_binary(Msg) ->
-    binary:replace(term_to_binary(Msg), <<"'">>, <<"\\'">>, [global]).
-
-binary_to_all(Bin) ->
-    binary_to_term(binary:replace(Bin, <<"\'">>, <<"'">>, [global])).
-
 
 sql(Values) ->
     FunFoldl = fun(Value, Acc) ->
@@ -134,3 +127,25 @@ term_to_bin(Arg) when is_atom(Arg) -> atom_to_binary(Arg, utf8);
 term_to_bin(Arg) when is_integer(Arg) -> integer_to_binary(Arg);
 term_to_bin(Arg) when is_binary(Arg) -> Arg.
 
+
+to_lower(Bin) -> to_lower(Bin, <<>>).
+
+to_lower(<<>>, Acc) -> Acc;
+to_lower(<<H:8, R/binary>>, Acc) ->
+    NewAcc =
+        if
+            H >= 65 andalso H =< 90 -> <<Acc/binary, (H + 32):8>>;
+            true -> <<Acc/binary, H:8>>
+        end,
+    to_lower(R, NewAcc).
+
+to_upper(Bin) -> to_upper(Bin, <<>>).
+
+to_upper(<<>>, Acc) -> Acc;
+to_upper(<<H:8, R/binary>>, Acc) ->
+    NewAcc =
+        if
+            H >= 97 andalso H =< 122 -> <<Acc/binary, (H - 32):8>>;
+            true -> <<Acc/binary, H:8>>
+        end,
+    to_upper(R, NewAcc).
