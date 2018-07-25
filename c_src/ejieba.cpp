@@ -35,7 +35,7 @@ static ERL_NIF_TERM cut(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
 
     if(type == 1){app.CutSmall(s, words, 512);}
     if(type == 2){app.CutHMM(s, words);}
-    if(type == 3){app.Cut(s, words);}
+    if(type == 3){app.Cut(s, words, false);}
     if(type == 4){app.CutAll(s, words);}
     if(type == 5){app.CutForSearch(s, words);}
 
