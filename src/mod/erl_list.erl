@@ -86,7 +86,6 @@ set_element(_Fun, [], ListsAcc) -> lists:reverse(ListsAcc);
 set_element(Fun, [H | R], ListsAcc) -> set_element(Fun, R, [Fun(H) | ListsAcc]).
 
 
-
 keyfind_jiffy([H], List) ->
     case lists:keyfind(H, 1, List) of
         false -> false;

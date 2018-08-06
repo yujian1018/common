@@ -10,6 +10,8 @@
     char/1
 ]).
 
+
+%% @doc 获取一个utf8的字符
 char(<<B1:8, Bin/binary>>) ->
     if
         B1 >= 1 andalso B1 =< 127 ->

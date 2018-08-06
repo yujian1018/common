@@ -13,7 +13,7 @@
 ]).
 
 call(UrlId, Args) ->
-    {Url, Arg, Method} = db_service_url:get(UrlId),
+    {Url, Arg, Method} = cache_service_url:get(UrlId),
     case Url of
         <<"http:", _/binary>> ->
             NewArgs = data(fun(I) -> cow_uri:urlencode(I) end, Arg, Args),
