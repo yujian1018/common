@@ -12,7 +12,7 @@
     access_token/0
 ]).
 
--include("http_pub.hrl").
+-include("erl_pub.hrl").
 -include_lib("public_key/include/public_key.hrl").
 
 

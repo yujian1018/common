@@ -6,7 +6,7 @@
 %%%-------------------------------------------------------------------
 -module(sdk_facebook).
 
--include("http_pub.hrl").
+-include("erl_pub.hrl").
 
 -export([
     login/1

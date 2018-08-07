@@ -10,7 +10,7 @@
 
 -export([arg_create/7, to_html/1, to_json/1]).
 
--include("http_pub.hrl").
+-include("erl_pub.hrl").
 
 
 %% @doc 统一下单

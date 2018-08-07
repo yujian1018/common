@@ -8,7 +8,7 @@
 
 -export([login/1]).
 
--include("http_pub.hrl").
+-include("erl_pub.hrl").
 
 
 -ifdef(prod).

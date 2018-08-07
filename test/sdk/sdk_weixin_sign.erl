@@ -6,7 +6,7 @@
 %%%-------------------------------------------------------------------
 -module(sdk_weixin_sign).
 
--include("http_pub.hrl").
+-include("erl_pub.hrl").
 
 -export([
     jsapi_sign/0

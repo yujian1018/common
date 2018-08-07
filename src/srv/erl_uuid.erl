@@ -30,7 +30,7 @@ init([]) ->
     ?start_timer(1, timeout_m_1),
     {ok, #{?now_micro => erl_time:m_now(), ?inc_int => 0}}.
 
-%% @doc area_id = 8 s_id = 1024 inc = 1024 now_micro = 2199023255552
+%% @doc area_id = 32 s_id = 32 inc = 4096 now_micro = 2199023255552
 handle_call(uuid, _From, #{?now_micro := NowMicro, ?inc_int := Inc}) ->
     {ok, AreaId} = application:get_env(?common, area_id),
     {ok, SId} = application:get_env(?common, s_id),
@@ -38,7 +38,7 @@ handle_call(uuid, _From, #{?now_micro := NowMicro, ?inc_int := Inc}) ->
         case erl_time:m_now() of
             NowMicro ->
                 if
-                    Inc >= 1024 ->
+                    Inc >= 4096 ->
                         timer:sleep(1),
                         {erl_time:m_now(), 0};
                     true ->
@@ -47,7 +47,7 @@ handle_call(uuid, _From, #{?now_micro := NowMicro, ?inc_int := Inc}) ->
             NewNowMicro ->
                 {NewNowMicro, 0}
         end,
-    RetUUID = RetNowMicro bsl 23 + AreaId bsl 20 + SId bsl 10 + RetInc + 1,
+    RetUUID = RetNowMicro bsl 23 + AreaId bsl 18 + SId bsl 12 + RetInc + 1,
     {reply, RetUUID, #{?now_micro => RetNowMicro, ?inc_int => RetInc + 1}};
 
 handle_call(_Request, _From, State) -> {reply, ok, State}.

@@ -9,15 +9,33 @@
 -include("erl_pub.hrl").
 
 -export([
-    test/0
+    repeat/0, repeat/2,
+    eff/0, eff/2
 ]).
 
+-define(SEQ, 1000).
+-define(PAGE, 1000).
+-define(MAX, 1000000).
 
-test() ->
-    test(1, maps:new()).
+
+repeat() ->
+    Tc = timer:tc(t_uuid, repeat, [1, maps:new()]),
+    io:format("time cost:~p~n", [Tc]).
+
+eff() ->
+    Seq = lists:seq(1, ?SEQ),
+    Tc = timer:tc(t_uuid, eff, [0, Seq]),
+    io:format("time cost:~p~n", [Tc]).
 
 
-test(1000000, Maps) -> maps:size(Maps);
-test(N, Maps) ->
+repeat(?MAX, Maps) -> maps:size(Maps);
+repeat(N, Maps) ->
     Key = erl_uuid:uuid(),
-    test(N + 1, maps:put(Key, 1, Maps)).
+    repeat(N + 1, maps:put(Key, 1, Maps)).
+
+
+eff(?PAGE, _Seq) -> ok;
+eff(Int, Seq) ->
+    Fun = fun(_I) -> erl_uuid:uuid() end,
+    erl_list:lists_spawn(Fun, Seq),
+    eff(Int + 1, Seq).

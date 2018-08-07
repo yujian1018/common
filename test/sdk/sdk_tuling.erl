@@ -6,7 +6,7 @@
 %%%-------------------------------------------------------------------
 -module(sdk_tuling).
 
--include("http_pub.hrl").
+-include("erl_pub.hrl").
 
 -export([
     httpc/1
