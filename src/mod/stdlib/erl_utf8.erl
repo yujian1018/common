@@ -7,7 +7,8 @@
 -module(erl_utf8).
 
 -export([
-    char/1
+    char/1,
+    to_list/1
 ]).
 
 
@@ -31,4 +32,13 @@ char(<<B1:8, Bin/binary>>) ->
         B1 > 252 andalso B1 =< 253 ->
             <<B2:8, B3:8, B4:8, B5:8, B6:8, RBin/binary>> = Bin,
             {<<B1:8, B2:8, B3:4, B4:8, B5:8, B6:8>>, RBin}
+    end.
+
+
+to_list(Bin) -> to_list(Bin, []).
+
+to_list(Bin, Acc) ->
+    case erl_utf8:char(Bin) of
+        {Char, <<>>} -> lists:reverse([Char | Acc]);
+        {Char, RText} -> to_list(RText, [Char | Acc])
     end.
