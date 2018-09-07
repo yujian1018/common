@@ -106,6 +106,11 @@ triple(_Fun, [], Acc) -> Acc;
 triple(Fun, [H | Items], Acc) ->
     if
         is_list(H) ->
-            [triple(Fun, Items, Fun(Acc, I)) || I <- H];
+            if
+                length(H) =:= 1 ->
+                    triple(Fun, Items, Fun(Acc, hd(H)));
+                true ->
+                    [triple(Fun, Items, Fun(Acc, I)) || I <- H]
+            end;
         true -> triple(Fun, Items, Fun(Acc, H))
     end.

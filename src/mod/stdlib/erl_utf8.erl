@@ -34,7 +34,7 @@ char(<<B1:8, Bin/binary>>) ->
             {<<B1:8, B2:8, B3:4, B4:8, B5:8, B6:8>>, RBin}
     end.
 
-
+to_list(<<>>) -> [];
 to_list(Bin) -> to_list(Bin, []).
 
 to_list(Bin, Acc) ->

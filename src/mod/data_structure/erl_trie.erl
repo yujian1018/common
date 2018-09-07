@@ -15,13 +15,19 @@
 
 %% 初始化
 init(Trie, Data) ->
-    lists:foldl(fun({Item, Markup}, TrieAcc) -> add(TrieAcc, Item, Markup) end, Trie, Data).
+    lists:foldl(
+        fun({Item, Markup}, TrieAcc) ->
+            if
+                Item =:= [] -> TrieAcc;
+                true -> add(TrieAcc, Item, Markup)
+            end
+        end, Trie, Data).
 
 
 %% 1.计算分支中老的节点更新
 %% 2.计算分支中新的节点
 add(Tree, Keys, Markup) ->
-%%    ?INFO("aaa:~tp", [[Tree, Keys, Markup, add(Tree, Keys, Markup, [])]]),
+%%    ?INFO("aaa:~tp", [[Tree, Keys, Markup]]),
     case add(Tree, Keys, Markup, []) of
         {nothing, _Tree, _KeysH} ->
             Tree;
@@ -85,14 +91,13 @@ add(Trees, [Key | KList], Markup, KeysH) ->
                 KList =:= [] ->
                     case maps:find(markup, TrieChild) of
                         error ->
-                            {reset, Trees#{Key => TrieChild#{markup => Markup}}, KeysH};
+                            {reset, Trees#{Key => TrieChild#{markup => [Markup]}}, KeysH};
                         {ok, OldMarkup} ->
-                            OldMarkups = binary:split(OldMarkup, <<";">>, [global, trim_all]),
-                            case lists:member(Markup, OldMarkups) of
+                            case lists:member(Markup, OldMarkup) of
                                 true ->
-                                    {nothing, Trees#{Key => TrieChild#{markup => OldMarkup}}, KeysH};
+                                    {nothing, Trees, KeysH};
                                 false ->
-                                    {reset, Trees#{Key => TrieChild#{markup => <<OldMarkup/binary, ";", Markup/binary>>}}, KeysH}
+                                    {reset, Trees#{Key => TrieChild#{markup => [Markup | OldMarkup]}}, KeysH}
                             end
                     end;
                 true -> add(TrieChild, KList, Markup, KeysH ++ [Key])
@@ -100,15 +105,16 @@ add(Trees, [Key | KList], Markup, KeysH) ->
         error ->
             BranchMaps =
                 if
-                    KList =:= [] -> #{markup => Markup};
+                    KList =:= [] ->
+                        #{markup => [Markup]};
                     true -> new_branch(lists:reverse(KList), Markup)
                 end,
             {new_branch, Trees#{Key => BranchMaps}, KeysH}
     end.
 
 
-new_branch([Char], Markup) -> #{Char => #{markup => Markup}};
-new_branch([Char | R], Markup) -> new_acc(R, #{Char => #{markup => Markup}}).
+new_branch([Char], Markup) -> #{Char => #{markup => [Markup]}};
+new_branch([Char | R], Markup) -> new_acc(R, #{Char => #{markup => [Markup]}}).
 
 new_acc([Char], BranchAcc) -> #{Char => BranchAcc};
 new_acc([Char | R], BranchAcc) -> new_acc(R, #{Char => BranchAcc}).
