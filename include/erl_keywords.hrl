@@ -18,6 +18,6 @@
 -define(error, error).
 
 -define(undefined, undefined).
--define(UNDEFINED, 1).
+-define(UNDEFINED, -1).
 -define(NULL, 'NULL').
 -define(null, null).
