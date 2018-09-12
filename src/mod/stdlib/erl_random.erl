@@ -8,6 +8,7 @@
 -export([
     rand/2, rand/1,
     random/1, random/2,
+    rand_list/1,
     seed/0
 ]).
 
@@ -41,3 +42,8 @@ random(Min, Max) ->
 seed() ->
     <<A:32, B:32, C:32>> = crypto:strong_rand_bytes(12),
     rand:seed(exs1024, {A, B, C}).
+
+
+rand_list(List) ->
+    Len = length(List),
+    [I || {_, I} <- lists:sort([{random(Len), I} || I <- List])].
