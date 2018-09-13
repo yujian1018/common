@@ -9,6 +9,8 @@
 %%%-------------------------------------------------------------------
 -module(erl_EditDistance).
 
+-compile(export_all).
+
 -export([
     edit_distance/2,
     min/2
