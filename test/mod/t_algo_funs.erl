@@ -1,0 +1,23 @@
+%%%-------------------------------------------------------------------
+%%% @author yj
+%%% @doc
+%%%
+%%% Created : 14. 九月 2018 下午1:51
+%%%-------------------------------------------------------------------
+-module(t_algo_funs).
+
+
+-export([
+    t/0,
+    test/1
+]).
+
+
+t() ->
+    timer:tc(?MODULE, test, [1]).
+
+
+test(100000) -> ok;
+test(N) ->
+    algo_funs:edit_distance(<<"bbbbbbbbbbbb">>, <<"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa">>),
+    test(N + 1).

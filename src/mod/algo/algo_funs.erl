@@ -4,7 +4,7 @@
 %%%
 %%% Created : 13. 九月 2018 下午5:37
 %%%-------------------------------------------------------------------
--module(erl_func).
+-module(algo_funs).
 
 -compile(no_native).
 
@@ -15,12 +15,10 @@
 ]).
 
 
-
-
 init() ->
     Path = case code:lib_dir(common, priv) of
-               {error, _} -> "./priv/erl_func";
-               Str -> Str ++ "/erl_func"
+               {error, _} -> "./priv/algo_funs";
+               Str -> Str ++ "/algo_funs"
            end,
     erlang:load_nif(Path, 0).
 
@@ -46,5 +44,5 @@ load_nif_test() ->
 dis_1_test() ->
     ?assertEqual(
         1,
-        erl_func:edit_distance(<<"utf-8">>, <<"koi8-r">>)).
+        algo_funs:edit_distance(<<"utf-8">>, <<"koi8-r">>)).
 -endif.

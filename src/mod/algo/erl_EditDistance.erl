@@ -9,7 +9,7 @@
 %%%-------------------------------------------------------------------
 -module(erl_EditDistance).
 
--compile(export_all).
+%%-compile(export_all).
 
 -export([
     edit_distance/2,
@@ -23,11 +23,10 @@ min(X, Y) ->
     end.
 
 edit_distance(Bin, BinLists) ->
-    Str1 = erl_utf8:to_list(Bin),
     lists:min(
         lists:map(
-            fun(BinList) ->
-                edit_distance_item(Str1, erl_utf8:to_list(BinList))
+            fun(BinItem) ->
+                algo_funs:edit_distance(BinItem, Bin)
             end,
             BinLists)).
 
