@@ -10,6 +10,11 @@
 
 -export([t/0]).
 
+-export([
+    set_hash/2,
+    qp/1
+]).
+
 t() ->
     Seq = lists:seq(1, ?SEQ),
     T1 = os:timestamp(),
