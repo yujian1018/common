@@ -7,7 +7,8 @@
 -module(erl_maps).
 
 -export([
-    find/2
+    find/2, %多层嵌套
+    keytake/3  %lists:keyfind
 ]).
 
 find([], V) -> V;
@@ -20,4 +21,15 @@ find([H | R], Maps) ->
     case maps:find(K, Maps) of
         {ok, V} -> find(R, V);
         _ -> <<>>
+    end.
+
+
+keytake(_Val, _Key, []) -> false;
+keytake(Val, Key, Maps) -> keytake(Val, Key, Maps, []).
+
+keytake(_Val, _Key, [], _Acc) -> false;
+keytake(Val, Key, [Map | Maps], Acc) ->
+    case maps:find(Key, Map) of
+        {ok, Val} -> {value, Map, Acc ++ Maps};
+        _ -> keytake(Val, Key, Maps, [Map | Acc])
     end.

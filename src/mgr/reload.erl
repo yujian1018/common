@@ -34,6 +34,7 @@ handle_cast(_Request, State) ->
 
 handle_info({timeout, _TimerRef, ?timeout_s_1}, State = #{apps := Apps}) ->
     reload(Apps),
+%%    erlang:garbage_collect(self()),
     erlang:start_timer(?TIMEOUT_S_1, self(), ?timeout_s_1),
     {noreply, State};
 handle_info(_Info, State) ->
