@@ -13,7 +13,8 @@
 
 -export([
     edit_distance/2,
-    min/2
+    min/2,
+    edit_distance_item/2
 ]).
 
 min(X, Y) ->
