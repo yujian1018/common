@@ -70,21 +70,21 @@ static ErlNifFunc nif_funcs[] =
 };
 
 
-// static int load(ErlNifEnv* env, void** priv, ERL_NIF_TERM load_info)
-// {
-//     return 0;
-// }
-// static int reload(ErlNifEnv* env, void** priv, ERL_NIF_TERM load_info)
-// {
-//     return 0;
-// }
-// static int upgrade(ErlNifEnv* env, void** priv, ERL_NIF_TERM load_info)
-// {
-//     return 0;
-// }
-// static int unload(ErlNifEnv* env, void** priv, ERL_NIF_TERM load_info)
-// {
-//     return 0;
-// }
+ static int load(ErlNifEnv* env, void** priv, ERL_NIF_TERM load_info)
+ {
+     return 0;
+ }
+ static int reload(ErlNifEnv* env, void** priv, ERL_NIF_TERM load_info)
+ {
+     return 0;
+ }
+ static int upgrade(ErlNifEnv* env, void** priv, ERL_NIF_TERM load_info)
+ {
+     return 0;
+ }
+ static int unload(ErlNifEnv* env, void** priv, ERL_NIF_TERM load_info)
+ {
+     return 0;
+ }
 
-ERL_NIF_INIT(algo_funs, nif_funcs, NULL, NULL, NULL, NULL)
+ERL_NIF_INIT(algo_funs, nif_funcs, load, reload, upgrade, unload)

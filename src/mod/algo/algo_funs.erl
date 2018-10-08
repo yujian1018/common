@@ -25,8 +25,10 @@ init() ->
 
 -spec edit_distance(binary(), binary()) -> integer().
 
-edit_distance(_Src, _Dest) ->
-    erlang:nif_error(nif_not_loaded).
+edit_distance(_Src, _Dest) when is_binary(_Src) andalso is_binary(_Dest) andalso _Src =/= <<>> andalso _Dest =/= <<>> ->
+    erlang:nif_error(nif_not_loaded);
+
+edit_distance(_Src, _Dest) -> 100.
 
 
 %%%===================================================================
@@ -43,6 +45,6 @@ load_nif_test() ->
 
 dis_1_test() ->
     ?assertEqual(
-        1,
+        5,
         algo_funs:edit_distance(<<"utf-8">>, <<"koi8-r">>)).
 -endif.
