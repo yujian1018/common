@@ -29,11 +29,11 @@ call(UrlId, Args) ->
             Ret =
                 case binary:split(NodeBin, <<"@127.0.0.1">>) of
                     [_, _] ->
-                        rpc:call(node(), Mod, Fun, [Args], 10000);
+                        rpc:call(node(), Mod, Fun, Args, 10000);
                     _ ->
                         if
-                            Method =:= <<"call">> -> rpc:call(Node, Mod, Fun, [Args], 10000);
-                            Method =:= <<"cast">> -> rpc:cast(Node, Mod, Fun, [Args])
+                            Method =:= <<"call">> -> rpc:call(Node, Mod, Fun, Args, 10000);
+                            Method =:= <<"cast">> -> rpc:cast(Node, Mod, Fun, Args)
                         end
                 end,
             case Ret of
