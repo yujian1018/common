@@ -28,10 +28,9 @@ edit_distance(Bin, BinLists) ->
     lists:min(
         lists:map(
             fun(BinItem) ->
-                BinItemSize = byte_size(BinItem),
                 if
-                    (BinSize - BinItemSize) > 6 -> 7;
-                    true -> algo_funs:edit_distance(BinItem, Bin)
+                    (BinSize - byte_size(BinItem)) > 6 -> 7;
+                    true -> algo_funs:edit_distance(Bin, BinItem)
                 end
             end,
             BinLists)).
