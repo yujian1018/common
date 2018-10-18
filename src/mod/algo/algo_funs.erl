@@ -23,6 +23,9 @@ init() ->
     erlang:load_nif(Path, 0).
 
 
+
+%%algo_funs:edit_distance(<<"dakaichangweiyisheng">>,<<"feichangshourenaidae">>).
+
 -spec edit_distance(binary(), binary()) -> integer().
 
 edit_distance(_Src, _Dest) when is_binary(_Src) andalso is_binary(_Dest) andalso _Src =/= <<>> andalso _Dest =/= <<>> ->
