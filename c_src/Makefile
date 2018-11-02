@@ -57,7 +57,7 @@ COMPILE_CPP = $(cpp_verbose) $(CXX) $(CXXFLAGS) $(CPPFLAGS) -c
 make:
 	@mkdir -p $(BASEDIR)/priv/
 	#g++  $(BASEDIR)/c_src/ejieba.cpp -shared -fPIC -I /usr/local/lib/erlang/usr/include/ -I$(BASEDIR)/c_src/cppjieba/include -I$(BASEDIR)/c_src/cppjieba/deps/ -I$(BASEDIR)/c_src/cppjieba/deps/gtest/include -o $(BASEDIR)/priv/ejieba.so
-	#gcc  $(BASEDIR)/c_src/iconv.c -shared -fPIC -I /usr/local/lib/erlang/usr/include/ -o $(BASEDIR)/priv/iconv.so
+	gcc  $(BASEDIR)/c_src/iconv.c -shared -fPIC -I /usr/local/lib/erlang/usr/include/ -o $(BASEDIR)/priv/iconv.so
 	gcc  $(BASEDIR)/c_src/algo_funs.c -shared -fPIC -I /usr/local/lib/erlang/usr/include/ -o $(BASEDIR)/priv/algo_funs.so
 
 $(C_SRC_OUTPUT): $(OBJECTS)
