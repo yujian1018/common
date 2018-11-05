@@ -34,9 +34,9 @@ lists_spawn(Fun, Lists) ->
                     try
                         Fun(I)
                     catch
-                        _Exit:_WHY ->
-                            ?ERROR("err:~p~n", [[_Exit, _WHY]]),
-                            {nomatch, {_Exit, _WHY}}
+                        _Exit:_WHY:_Stack ->
+                            ?ERROR("err:~p~n", [[_Exit, _WHY, _Stack]]),
+                            {nomatch, {_Exit, _WHY, _Stack}}
                     end,
                 Pid ! {Ref, Res}
             end) || I <- Lists]
