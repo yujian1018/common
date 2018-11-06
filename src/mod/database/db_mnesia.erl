@@ -13,7 +13,7 @@
     write/1,
     read/2,
     do/1, transaction/1,
-    foldl_record/3
+    foldl/3
 ]).
 
 
@@ -41,11 +41,11 @@ transaction(F) ->
     end.
 
 
-foldl_record(Fun, Tab, Index) ->
+
+foldl(Fun, DataInit, TabName) -> foldl(Fun, DataInit, TabName, 0).
+
+foldl(Fun, Data, Tab, Index) ->
     case mnesia:dirty_slot(Tab, Index) of
-        '$end_of_table' ->
-            ok;
-        L ->
-            lists:foreach(fun(I) -> Fun(I) end, L),
-            foldl_record(Fun, Tab, Index + 1)
+        '$end_of_table' -> Data;
+        DataQuery -> foldl(Fun, lists:foldl(Fun, Data, DataQuery), Tab, Index + 1)
     end.
