@@ -18,7 +18,7 @@
 
 get_mods(AppName, Behaviour) ->
     case code:lib_dir(AppName, ebin) of
-        {error, _Err} -> ?ERROR("no app:~p~n", [AppName]),[];
+        {error, _Err} -> ?ERROR("no app:~p~n", [AppName]), [];
         Pwd ->
             {ok, FileNames} = file:list_dir(Pwd),
             lists:foldl(
