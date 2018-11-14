@@ -11,7 +11,7 @@
 
     sql/1, mysql_encode/1, mysql_decode/1, %转译 mysql关键字' 单引号
 
-    term_to_bin/1,
+    term_to_bin/1, bin_to_term/1,
 
     to_lower/1, to_upper/1
 ]).
@@ -149,3 +149,23 @@ to_upper(<<H:8, R/binary>>, Acc) ->
             true -> <<Acc/binary, H:8>>
         end,
     to_upper(R, NewAcc).
+
+bin_to_term(<<>>) -> [];
+bin_to_term(Bin) ->
+    <<B1:8, _Bin/binary>> = Bin,
+    if
+        B1 =< 127 ->
+            {ok, Ret, _} = erl_scan:string(binary_to_list(<<Bin/binary, ".">>)),
+            case erl_parse:parse_term(Ret) of
+                {ok, Term} ->
+                    if
+                        is_integer(Term) -> Term;
+                        is_list(Term) -> Term;
+                        true -> Bin
+                    end;
+                _ ->
+                    Bin
+            end;
+        true ->
+            Bin
+    end.
