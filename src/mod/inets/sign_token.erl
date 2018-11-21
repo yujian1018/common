@@ -6,7 +6,13 @@
 %%%-------------------------------------------------------------------
 -module(sign_token).
 
--export([jwt/0, jwt/3]).
+-include("erl_pub.hrl").
+
+-export([
+    jwt/0, jwt/3,
+    sign/2
+]).
+
 
 jwt(AuthHeader, AuthClaimSet, RsaKey) ->
     SignInput = <<(b64_encode(AuthHeader))/binary, ".", (b64_encode(AuthClaimSet))/binary>>,
@@ -17,7 +23,7 @@ jwt(AuthHeader, AuthClaimSet, RsaKey) ->
 
 %%    Rsa = <<"secret">>,
 %%    Hex = crypto:hmac(sha256, Rsa, SignInput),
-    
+
     <<SignInput/binary, ".", (b64_encode(Hex))/binary>>.
 
 
@@ -35,3 +41,15 @@ b64_encode(Key) ->
     BaseKey2 = binary:replace(BaseKey, <<"+">>, <<"-">>, [global]),
     BaseKey3 = binary:replace(BaseKey2, <<"/">>, <<"_">>, [global]),
     binary:replace(BaseKey3, <<"=">>, <<"">>, [global]).
+
+
+
+sign(Sign, Times) ->
+    TimesInt = binary_to_integer(Times),
+    Now = erl_time:now(),
+    if
+        abs(TimesInt - Now) =< (?TIMEOUT_MO_1 / 1000) ->
+            erl_bin:to_lower(erl_hash:md5_bin(<<"date=", Times/binary, "&key=3e1a34f2fe775e8b95cf021547462c15">>)) =:= Sign;
+        true ->
+            false
+    end.

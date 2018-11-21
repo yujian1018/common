@@ -12,4 +12,4 @@
 -define(throw(ErrCode, Msg), {throw, ErrCode, Msg}).
 
 -define(assertEqual(Expect, ErrCode), if (Expect) =:= true -> ok;true -> erlang:throw({throw, ErrCode, <<>>}) end).
--define(assertEqual(Expect, ErrCode, ErrMsg), if (Expect) =:= true -> ok;true -> erlang:throw({throw, Err, ErrMsg}) end).
+-define(assertEqual(Expect, ErrCode, ErrMsg), if (Expect) =:= true -> ok;true -> erlang:throw({throw, ErrCode, ErrMsg}) end).
