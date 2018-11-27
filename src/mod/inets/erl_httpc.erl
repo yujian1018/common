@@ -13,7 +13,7 @@
 ]).
 
 get(Url, Head) ->
-    case httpc:request(get, {Url, Head}, [{timeout, 5000}], []) of
+    case httpc:request(get, {Url, Head}, [{timeout, 60000}], []) of
         {ok, {{_, 200, "OK"}, _Head, Response}} ->
             {ok, Response};
         _Err ->
