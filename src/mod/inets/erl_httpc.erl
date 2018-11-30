@@ -13,7 +13,7 @@
 ]).
 
 get(Url, Head) ->
-    case httpc:request(get, {Url, Head}, [{timeout, 60000}], []) of
+    case httpc:request(get, {Url, Head}, [{timeout, 30000}], []) of
         {ok, {{_, 200, "OK"}, _Head, Response}} ->
             {ok, Response};
         _Err ->
@@ -23,7 +23,7 @@ get(Url, Head) ->
 
 %% "application/x-www-form-urlencoded"
 post(Url, Head, ContentType, Body) ->
-    case httpc:request(post, {Url, Head, ContentType, Body}, [{timeout, 5000}], []) of
+    case httpc:request(post, {Url, Head, ContentType, Body}, [{timeout, 30000}], []) of
         {ok, {{_, 200, _}, _Head, Response}} ->
             {ok, Response};
         _Err ->
