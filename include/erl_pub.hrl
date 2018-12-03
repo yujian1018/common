@@ -17,18 +17,6 @@
 -define(put(K, V), erlang:put(K, V)).
 -define(get(K), erlang:get(K)).
 
-
--ifdef(linux).
-
--define(encode(JiffyData), jiffy:encode(JiffyData)).
--define(decode(JiffyData),
-    case jiffy:decode(JiffyData) of
-        {JiffyDecode} -> JiffyDecode;
-        JiffyDecode -> JiffyDecode
-    end).
-
--else.
-
 -define(encode(Rfc4627Data), list_to_binary(jsx:encode(Rfc4627Data))).
 -define(decode(Rfc4627Data),
     case jsx:decode(Rfc4627Data) of
@@ -38,5 +26,8 @@
             Rfc4627Obj
     end).
 
--endif.
 
+-define(CHILD_S(ChildRegName, ChildMod, ChildType, ChildArg),
+    {ChildRegName, {ChildMod, start_link, ChildArg}, permanent, 5000, ChildType, [ChildMod]}).
+-define(CHILD_S(ChildMod, ChildType), ?CHILD_S(ChildMod, ChildMod, ChildType, [])).
+-define(CHILD_S(ChildMod, ChildType, ChildArg), ?CHILD_S(ChildMod, ChildMod, ChildType, ChildArg)).

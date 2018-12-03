@@ -16,6 +16,10 @@
     foldl/3
 ]).
 
+-export([
+    ensure_started/0
+]).
+
 
 write(VO) ->
     mnesia:dirty_write(VO).
@@ -48,4 +52,28 @@ foldl(Fun, Data, Tab, Index) ->
     case mnesia:dirty_slot(Tab, Index) of
         '$end_of_table' -> Data;
         DataQuery -> foldl(Fun, lists:foldl(Fun, Data, DataQuery), Tab, Index + 1)
+    end.
+
+
+
+ensure_started() ->
+    case mnesia_lib:is_running() of
+        yes ->
+            yes;
+        no ->
+            case mnesia_lib:exists(mnesia_lib:dir("schema.DAT")) of
+                true ->
+                    mnesia:start();
+                false ->
+                    {ok, MnesiaDir} = application:get_env(mnesia, dir),
+                    case filelib:is_dir(MnesiaDir) of
+                        true -> ok;
+                        false ->
+                            [file:make_dir(I) || I <- erl_file:dirs(MnesiaDir)],
+                            mnesia:stop(),
+                            mnesia:delete_schema([node()]),
+                            mnesia:create_schema([node()]),
+                            mnesia:start()
+                    end
+            end
     end.
