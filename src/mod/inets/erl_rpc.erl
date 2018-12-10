@@ -40,7 +40,7 @@ call(UrlId, Args) ->
                 {badrpc,nodedown} ->
                     ?throw(?ERR_NOTFOUND_SERVICE);
                 {badrpc, Reason} ->
-                    ?ERROR("badrpc:~p~n", [[UrlId, Node, Mod, Fun, Args, Reason]]),
+                    ?ERROR("badrpc:~tp~n", [[UrlId, Node, Mod, Fun, Args, Reason]]),
                     ?throw(?ERR_CRASH_SERVICE);
                 Ret -> Ret
             end
