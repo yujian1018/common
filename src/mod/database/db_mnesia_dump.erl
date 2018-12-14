@@ -52,7 +52,7 @@ dump_next(S, TabName, Cont) ->
     DBRet =
         if
             Cont =:= 0 ->
-                mnesia:activity(async_dirty, fun mnesia:select/4, [TabName, [{'_', [], ['$_']}], 50000, read]);
+                mnesia:activity(async_dirty, fun mnesia:select/4, [TabName, [{'_', [], ['$_']}], 10000, read]);
 %%                mnesia:transaction(fun() -> mnesia:select(TabName, [{'_', [], ['$_']}], 10000, read) end);
             true ->
                 mnesia:activity(async_dirty, fun mnesia:select/1, [Cont])
