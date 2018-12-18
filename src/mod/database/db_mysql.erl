@@ -35,18 +35,18 @@ do_sql(Pool, Sql) ->
         {ok_packet, _SeqNum, _AffectedRows, InsertId, _Status, _WarningCount, _Msg} ->
             InsertId;
         {error_packet, _SeqNum, _Code, _Status, _Msg} ->
-            ?ERROR("emysql error_packet:~p~nPool:~p...SQL:~p~n", [{error_packet, _SeqNum, _Code, _Status, _Msg}, Pool, Sql]),
+            ?ERROR("emysql error_packet:~p~nPool:~tp...SQL:~tp~n", [{error_packet, _SeqNum, _Code, _Status, _Msg}, Pool, Sql]),
             ?return_err(?ERR_EXEC_SQL_ERR, 'ERR_EXEC_SQL_ERR');
         Packets ->
             case catch ret(Packets, []) of
                 {throw, 'ERR_EXEC_SQL_ERR'} ->
-                    ?ERROR("emysql error POOL:~p...SQL:~ts~n", [Pool, Sql]),
+                    ?ERROR("emysql error POOL:~tp...SQL:~tp~n", [Pool, Sql]),
                     ?return_err(?ERR_EXEC_SQL_ERR, 'ERR_EXEC_SQL_ERR');
                 Ret -> Ret
             end
     catch
         _E1:_E2 ->
-            ?ERROR("emysql crash:catch:~p~nwhy:~p~nPool:~p...SQL:~p~n", [_E1, _E2, Pool, Sql])
+            ?ERROR("emysql crash:catch:~tp~nwhy:~tp~nPool:~tp...SQL:~tp~n", [_E1, _E2, Pool, Sql])
     end.
 
 
@@ -54,5 +54,5 @@ ret([], Acc) -> lists:reverse(Acc);
 ret([{result_packet, _SeqNum, _FieldList, Rows, _Extra} | R], Acc) -> ret(R, [Rows | Acc]);
 ret([{ok_packet, _SeqNum, _AffectedRows, InsertId, _Status, _WarningCount, _Msg} | R], Acc) -> ret(R, [InsertId | Acc]);
 ret([{error_packet, _SeqNum, _Code, _Status, _Msg} | _R], _Acc) ->
-    ?ERROR("emysql:execute error:~p~n SQL_FAIL:~p~nSQL_SUCCESS::~p~n", [{error_packet, _SeqNum, _Code, _Status, _Msg}, _R, _Acc]),
+    ?ERROR("emysql:execute error:~tp~n SQL_FAIL:~tp~nSQL_SUCCESS::~tp~n", [{error_packet, _SeqNum, _Code, _Status, _Msg}, _R, _Acc]),
     ?return_err('ERR_EXEC_SQL_ERR').
