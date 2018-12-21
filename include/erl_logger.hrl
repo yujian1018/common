@@ -23,8 +23,14 @@
 -define(color_white, "\e[0;37m").
 
 
--ifdef(linux).
 
+-ifdef(prod).
+    -define(LOGGER_INIT, logger:set_primary_config(level, info)).
+-else.
+    -define(LOGGER_INIT, logger:set_primary_config(level, debug)).
+-endif.
+
+-ifdef(linux).
     -define(DEBUG(MSG),         logger:debug("\e[0;35m[DEBUG] ~p [~s:~b ~w]~n"  MSG"~n\e[0m", [calendar:local_time(), ?FILE, ?LINE, self()])).
     -define(DEBUG(FMT, ARGS),   logger:debug("\e[0;35m[DEBUG] ~p [~s:~b ~w]~n"  FMT"~n\e[0m", [calendar:local_time(), ?FILE, ?LINE, self() | ARGS])).
     -define(INFO(MSG),          logger:info("\e[0;32m[INFO] ~p [~s:~b ~w]~n"  MSG"~n\e[0m", [calendar:local_time(), ?FILE, ?LINE, self()])).
