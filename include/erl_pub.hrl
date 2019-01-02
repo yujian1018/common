@@ -6,7 +6,7 @@
 %%%-------------------------------------------------------------------
 
 -include("erl_keywords.hrl").
--include("erl_lager_log.hrl").
+-include("erl_logger.hrl").
 -include("erl_verify.hrl").
 -include("erl_node.hrl").
 -include("erl_db.hrl").

@@ -8,11 +8,11 @@
 
 -include("erl_pub.hrl").
 
--compile(export_all).
+%%-compile(export_all).
 
 -export([
     new/2,
-    search/2, search_max/3
+    search/2, search_max/3, search_max/2
 ]).
 
 %% 初始化
