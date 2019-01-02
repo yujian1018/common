@@ -3,7 +3,4 @@ ebin
 .rebar
 _auto
 erl_crash.dump
-
 *.so
-*.o
-*.d

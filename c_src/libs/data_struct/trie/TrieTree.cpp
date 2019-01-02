@@ -1,5 +1,5 @@
 
-#include "TrieTree.h"
+#include "include/TrieTree.h"
 
 /* 构造函数:初始化对象
  * 参数:无

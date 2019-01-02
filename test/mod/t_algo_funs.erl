@@ -19,5 +19,5 @@ t() ->
 
 test(1000000) -> ok;
 test(N) ->
-    algo_funs:edit_distance(<<"dakaichangweiybbbbbbi">>, <<"feichaadfaabaaaaaaaaa">>),
+    algo:edit_distance(<<"dakaichangweiybbbbbbi">>, <<"feichaadfaabaaaaaaaaa">>),
     test(N + 1).

@@ -4,7 +4,7 @@
 %%%
 %%% Created : 13. 九月 2018 下午5:37
 %%%-------------------------------------------------------------------
--module(algo_funs).
+-module(algo).
 
 -compile(no_native).
 
@@ -17,14 +17,14 @@
 
 init() ->
     Path = case code:lib_dir(common, priv) of
-               {error, _} -> "./priv/algo_funs";
-               Str -> Str ++ "/algo_funs"
+               {error, _} -> "./priv/algo";
+               Str -> Str ++ "/algo"
            end,
     erlang:load_nif(Path, 0).
 
 
 
-%%algo_funs:edit_distance(<<"dakaichangweiyisheng">>,<<"feichangshourenaidae">>).
+%%algo:edit_distance(<<"dakaichangweiyisheng">>,<<"feichangshourenaidae">>).
 
 -spec edit_distance(binary(), binary()) -> integer().
 
@@ -49,5 +49,5 @@ load_nif_test() ->
 dis_1_test() ->
     ?assertEqual(
         5,
-        algo_funs:edit_distance(<<"utf-8">>, <<"koi8-r">>)).
+        algo:edit_distance(<<"utf-8">>, <<"koi8-r">>)).
 -endif.

@@ -30,7 +30,7 @@ edit_distance(Bin, BinLists) ->
             fun(BinItem) ->
                 if
                     (BinSize - byte_size(BinItem)) > 6 -> 7;
-                    true -> algo_funs:edit_distance(Bin, BinItem)
+                    true -> algo:edit_distance(Bin, BinItem)
                 end
             end,
             BinLists)).
