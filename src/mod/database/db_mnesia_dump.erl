@@ -76,7 +76,7 @@ load_textfile(File) ->
 
 create_tab(TabsInfo) ->
     Tabs = lists:delete(schema, mnesia_lib:local_active_tables()),
-    Fun = fun(Tab, Def) ->
+    Fun = fun({Tab, Def}) ->
         case lists:member(Tab, Tabs) of
             true -> ?INFO("表已经存在");
             false ->
@@ -93,6 +93,6 @@ next(S) ->
         {ok, Record} ->
             mnesia:dirty_write(Record),
             next(S);
-        _Err -> ?ERROR("ERR io:read", [_Err])
+        _Err -> ?ERROR("ERR io:read:~tp", [_Err])
     end.
 
