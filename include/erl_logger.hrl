@@ -37,10 +37,17 @@
     -define(INFO(FMT, ARGS),    logger:info("\e[0;32m[INFO] ~p [~s:~b ~w]~n"  FMT"~n\e[0m", [calendar:local_time(), ?FILE, ?LINE, self() | ARGS])).
     -define(NOTICE(MSG),        logger:notice("\e[0;34m[NOTICE] ~p [~s:~b ~w]~n"  MSG"~n\e[0m", [calendar:local_time(), ?FILE, ?LINE, self()])).
     -define(NOTICE(FMT, ARGS),  logger:notice("\e[0;34m[NOTICE] ~p [~s:~b ~w]~n"  FMT"~n\e[0m", [calendar:local_time(), ?FILE, ?LINE, self() | ARGS])).
-    -define(WARN(MSG),          logger:warning("\e[0;33;1m[WARN] ~p [~s:~b ~w]~n"  MSG"~n\e[0m", [calendar:local_time(), ?FILE, ?LINE, self()])).
-    -define(WARN(FMT, ARGS),    logger:warning("\e[0;33;1m[WARN] ~p [~s:~b ~w]~n"  FMT"~n\e[0m", [calendar:local_time(), ?FILE, ?LINE, self() | ARGS])).
-    -define(ERROR(MSG),         logger:error("\e[0;31;1m[ERROR] ~p [~s:~b ~w]~n"  MSG"~n\e[0m", [calendar:local_time(), ?FILE, ?LINE, self()])).
-    -define(ERROR(FMT, ARGS),   logger:error("\e[0;31;1m[ERROR] ~p [~s:~b ~w]~n"  FMT"~n\e[0m", [calendar:local_time(), ?FILE, ?LINE, self() | ARGS])).
+    -ifdef(prod).
+        -define(WARN(MSG),          logger:warning("[WARN] ~p [~s:~b ~w]~n"  MSG"~n~n", [calendar:local_time(), ?FILE, ?LINE, self()])).
+        -define(WARN(FMT, ARGS),    logger:warning("[WARN] ~p [~s:~b ~w]~n"  FMT"~n~n", [calendar:local_time(), ?FILE, ?LINE, self() | ARGS])).
+        -define(ERROR(MSG),         logger:error("[ERROR] ~p [~s:~b ~w]~n"  MSG"~n~n", [calendar:local_time(), ?FILE, ?LINE, self()])).
+        -define(ERROR(FMT, ARGS),   logger:error("[ERROR] ~p [~s:~b ~w]~n"  FMT"~n~n", [calendar:local_time(), ?FILE, ?LINE, self() | ARGS])).
+    -else.
+        -define(WARN(MSG),          logger:warning("\e[0;33;1m[WARN] ~p [~s:~b ~w]~n"  MSG"~n\e[0m", [calendar:local_time(), ?FILE, ?LINE, self()])).
+        -define(WARN(FMT, ARGS),    logger:warning("\e[0;33;1m[WARN] ~p [~s:~b ~w]~n"  FMT"~n\e[0m", [calendar:local_time(), ?FILE, ?LINE, self() | ARGS])).
+        -define(ERROR(MSG),         logger:error("\e[0;31;1m[ERROR] ~p [~s:~b ~w]~n"  MSG"~n\e[0m", [calendar:local_time(), ?FILE, ?LINE, self()])).
+        -define(ERROR(FMT, ARGS),   logger:error("\e[0;31;1m[ERROR] ~p [~s:~b ~w]~n"  FMT"~n\e[0m", [calendar:local_time(), ?FILE, ?LINE, self() | ARGS])).
+    -endif.
 
 -else.
 
