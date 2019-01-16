@@ -1,5 +1,5 @@
 #include "erl_nif.h"
-#include "std_string.h"
+//#include "std_string.h"
 
 #include <cstring>
 #include <iostream>

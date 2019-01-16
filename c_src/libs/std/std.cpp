@@ -12,16 +12,16 @@ static ERL_NIF_TERM t(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[])
     string s1 = c;
     cout << s1 << endl;
 
-    u16string b = to_utf16(s1);
+//    u16string b = to_utf16(s1);
     // cout << b << endl;
 
-    string s2 = to_utf8(b);
-    cout << s2 << endl;
+//    string s2 = to_utf8(b);
+//    cout << s2 << endl;
 
-    int len = s2.length();
+    int len = s1.length();
     ErlNifBinary h;
     enif_alloc_binary(len, &h);
-    memcpy(h.data, s2.c_str(), len);
+    memcpy(h.data, s1.c_str(), len);
     return enif_make_binary(env, &h);
 }
 

@@ -29,6 +29,7 @@ execute(Pool, SQL) ->
 
 
 do_sql(Pool, Sql) ->
+%%    ?DEBUG("do_sql(~tp, ~tp)", [Pool, Sql]),
     try emysql:execute(Pool, Sql) of
         {result_packet, _SeqNum, _FieldList, Rows, _Extra} ->
             Rows;
