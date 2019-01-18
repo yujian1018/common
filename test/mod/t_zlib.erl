@@ -6,33 +6,30 @@
 %%%-------------------------------------------------------------------
 -module(t_zlib).
 
--include("erl_pub.hrl").
-
 -export([
     t/0
 ]).
 
+-define(MAX_COUNT, 100).
+
 
 t() ->
+    inets:start(),
+    ssl:start(),
     t(1).
 
-t(1000) -> ok;
+t(?MAX_COUNT) -> ok;
 t(Index) ->
+    io:format("Index:~p~n", [Index]),
     IndexStr = integer_to_list(Index),
     case storage_1:read("/media/yj/DOC/project/baike", "https://baike.baidu.com/view/" ++ IndexStr ++ ".htm") of
         {ok, Bin} ->
-%%            ?INFO("size:", [byte_size(Bin)]),
-
-%%            Z = zlib:open(),
-%%            ok = zlib:deflateInit(Z, best_compression),
-%%            Last = zlib:deflate(Z, Bin, finish),
-%%            ok = zlib:deflateEnd(Z),
-%%            zlib:close(Z),
-%%            list_to_binary(Last);
+%%    case httpc:request(get, {"http://www.360baike.cn/html/wiki/doc-view-" ++ IndexStr ++ ".html", []}, [{timeout, 30000}], []) of
+%%        {ok, {{_, 200, "OK"}, _Head, Bin}} ->
+            Bin;
 %%            zlib:compress(Bin);
-
-            zlib:zip(Bin);
+%%            zlib:zip(Bin);
         _Err ->
-            ok
+            {error, _Err}
     end,
     t(Index + 1).
