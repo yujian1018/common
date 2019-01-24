@@ -15,7 +15,7 @@
     foldl/4,
     map/3, map_break/2,
     set_element/2,
-    keyfind_jiffy/2,
+    keyfind_jiffy/2, keyfind_list/2,
     triple/2
 ]).
 
@@ -98,6 +98,19 @@ keyfind_jiffy([H | R], List) ->
         false -> false;
         {_, {Val}} -> keyfind_jiffy(R, Val)
     end.
+
+keyfind_list([H], List) ->
+    case lists:keyfind(H, 1, List) of
+        false -> false;
+        {_, Val} -> Val
+    end;
+
+keyfind_list([H | R], List) ->
+    case lists:keyfind(H, 1, List) of
+        false -> false;
+        {_, Val} -> keyfind_list(R, Val)
+    end.
+
 
 
 triple(Fun, Items) -> triple(Fun, Items, []).
