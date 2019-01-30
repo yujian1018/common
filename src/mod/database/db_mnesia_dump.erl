@@ -93,6 +93,8 @@ next(S) ->
         {ok, Record} ->
             mnesia:dirty_write(Record),
             next(S);
-        _Err -> ?ERROR("ERR io:read:~tp", [_Err])
+        _Err ->
+            ?ERROR("ERR io:read:~tp", [_Err]),
+            file:close(S)
     end.
 
