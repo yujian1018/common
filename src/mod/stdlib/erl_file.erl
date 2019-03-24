@@ -75,7 +75,7 @@ max_file(Path, FileTpl, MaxSize) ->
                     fun(I, Acc) ->
                         FileTokens = string:tokens(I, "."),
                         case lists:sublist(FileTokens, 1, Len) of
-                            HeadTpl -> [{lists:last(FileTokens), I} | Acc];
+                            HeadTpl -> [{list_to_integer(lists:last(FileTokens)), I} | Acc];
                             _ -> Acc
                         end
                     end,
