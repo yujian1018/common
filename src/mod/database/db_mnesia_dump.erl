@@ -11,7 +11,7 @@
 
 -export([
     dump_to_textfile/1, dump_to_textfile/2,
-    load_textfile/1
+    load_textfile/1, load_textfile/2
 ]).
 
 
@@ -73,6 +73,13 @@ load_textfile(File) ->
     create_tab(TabsInfo),
     next(S).
 
+load_textfile(File, Fun) ->
+    db_mnesia:ensure_started(),
+    {ok, S} = file:open(File, [read]),
+    {ok, {tables, TabsInfo}} = io:read(S, ''),
+    create_tab(TabsInfo),
+    next(S, Fun).
+
 
 create_tab(TabsInfo) ->
     Tabs = lists:delete(schema, mnesia_lib:local_active_tables()),
@@ -80,6 +87,7 @@ create_tab(TabsInfo) ->
         case lists:member(Tab, Tabs) of
             true -> ?INFO("表已经存在");
             false ->
+                
                 case mnesia:create_table(Tab, Def) of
                     {aborted, Reason} -> ?INFO("创建表失败:~tp", [{Tab, Def, Reason}]);
                     _ -> ok
@@ -98,3 +106,11 @@ next(S) ->
             file:close(S)
     end.
 
+
+next(S, Fun) ->
+    case io:read(S, '') of
+        {ok, Record} ->
+            mnesia:dirty_write(Fun(Record)),
+            next(S, Fun);
+        _Err -> ?ERROR("ERR io:read", [_Err])
+    end.
