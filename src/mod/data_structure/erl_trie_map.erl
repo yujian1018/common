@@ -38,8 +38,10 @@ add_items(Map, Items, Tag) ->
         Items).
 
 
-new_branch([Char], Tag) -> #{Char => null, tag => Tag};
-new_branch([Char | R], Tag) -> new_acc(R, #{Char => null, tag => Tag}).
+new_branch([Char], Tag) -> #{Char => null, tag => [Tag]};
+new_branch(Words, Tag) ->
+    [Char | R] = lists:reverse(Words),
+    new_acc(R, #{Char => null, tag => [Tag]}).
 
 new_acc([], MapAcc) -> MapAcc;
 new_acc([Char | R], MapAcc) -> new_acc(R, #{Char => MapAcc}).
@@ -50,6 +52,7 @@ set_branch(Map, Words, Tag) ->
 
 
 set_branch(_Map, [], _Tag, TreeMaps) ->
+    ?INFO("aaa:~tp", [TreeMaps]),
     lists:foldl(
         fun({Key, KeyMaps}, MapsAcc) ->
             MapsAcc#{Key => KeyMaps}
@@ -58,16 +61,25 @@ set_branch(_Map, [], _Tag, TreeMaps) ->
         TreeMaps);
 
 
-set_branch(Map, [Char1, Char2 | RWords], Tag, TreeMaps) ->
-    case maps:get(Char1, Map, null) of
+set_branch(Map, [Char | RWords], Tag, TreeMaps) ->
+    case maps:get(Char, Map, null) of
         null ->
-            set_branch(Map, [], Tag, [{Char1, #{Char1 => new_branch([Char2 | RWords], Tag)}} | TreeMaps]);
+            Map#{Char => new_branch(RWords, Tag)};
         Val ->
             if
                 RWords == [] ->
-                    set_branch(Map, [], Tag, [{Char1, #{Char1 => new_branch([Char2 | RWords], Tag)}} | TreeMaps]);
+                    case maps:get(tag, Map, null) of
+                        null ->
+                            set_branch(Map, [], Tag, [{Char, Val#{tag => Tag}} | TreeMaps]);
+                        TagOld ->
+                            case lists:member(Tag, TagOld) of
+                                true -> null;
+                                false ->
+                                    set_branch(Map, [], Tag, [{Char, Val#{tag => [Tag | TagOld]}} | TreeMaps])
+                            end
+                    end;
                 true ->
-                    set_branch(Val, [Char2 | RWords], Tag, [{Char1, Val} | TreeMaps])
+                    set_branch(Val, RWords, Tag, [{Char, Val} | TreeMaps])
             end
     end.
 
