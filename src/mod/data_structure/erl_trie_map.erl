@@ -11,37 +11,39 @@
 %%-compile(export_all).
 
 -export([
-    new/2,
-    search/2, search_max/3, search_max/2
+    add_words/2,
+    search/2
 ]).
 
 %% 初始化
-%%-spec new(#{}, [{{<<"F">>, 1070010001}, [<<"我们都有一个家"/utf8>>]}]) -> #{}.
-new(Trie, Data) ->
+%%-spec new(#{}, [{{<<"F">>, 1070010001}, [[<<"我">>, <<"们">>, <<"都">>, <<"有">>, <<"一">>, <<"个">>, <<"家"/utf8>>]}]) -> #{}.
+add_words(Trie, Data) ->
     lists:foldl(
         fun({Tag, Items}, TrieAcc) ->
             if
                 Items =:= [] -> TrieAcc;
-                true -> add_items(TrieAcc, Items, Tag)
+                true -> add_words(TrieAcc, Items, Tag)
             end
         end, Trie, Data).
 
 
 %% 1.计算分支中老的节点更新
 %% 2.计算分支中新的节点
-add_items(Map, Items, Tag) ->
+add_words(Map, Items, Tag) ->
     lists:foldl(
         fun(Item, MapAcc) ->
-            set_branch(MapAcc, erl_utf8:to_list(Item), Tag)
+            ?INFO("aaa:~tp", [[Item, Tag]]),
+            MapAccRet = set_branch(MapAcc, Item, Tag),
+            maps:merge(MapAcc, MapAccRet)
         end,
         Map,
         Items).
 
 
-new_branch([Char], Tag) -> #{Char => null, tag => [Tag]};
+new_branch([_Char], Tag) -> #{tag => [Tag]};
 new_branch(Words, Tag) ->
     [Char | R] = lists:reverse(Words),
-    new_acc(R, #{Char => null, tag => [Tag]}).
+    new_acc(R, #{Char => #{tag => [Tag]}}).
 
 new_acc([], MapAcc) -> MapAcc;
 new_acc([Char | R], MapAcc) -> new_acc(R, #{Char => MapAcc}).
@@ -52,91 +54,68 @@ set_branch(Map, Words, Tag) ->
 
 
 set_branch(_Map, [], _Tag, TreeMaps) ->
-    ?INFO("aaa:~tp", [TreeMaps]),
-    lists:foldl(
-        fun({Key, KeyMaps}, MapsAcc) ->
-            MapsAcc#{Key => KeyMaps}
+%%    ?INFO("TreeMaps 111：~tp", [TreeMaps]),
+    RMap = lists:foldl(
+        fun({Key, Val}, MapsAcc) ->
+%%            ?INFO("TreeMaps 222：~tp", [[{Key, Val}, MapsAcc]]),
+            #{Key => maps:merge(Val, MapsAcc)}
         end,
         #{},
-        TreeMaps);
+        TreeMaps),
+%%    ?INFO("TreeMaps 333：~tp", [[RMap]]),
+    RMap;
 
+set_branch(Map, [Char], Tag, TreeMaps) ->
+    case maps:get(Char, Map, null) of
+        null ->
+            set_branch(#{}, [], Tag, [{Char, new_branch([Char], Tag)} | TreeMaps]);
+        Val ->
+            TreeMap = set_tag(Tag, Char, Val),
+            set_branch(Val, [], Tag, [TreeMap | TreeMaps])
+    end;
 
 set_branch(Map, [Char | RWords], Tag, TreeMaps) ->
     case maps:get(Char, Map, null) of
         null ->
-            Map#{Char => new_branch(RWords, Tag)};
+            TreeMap = {Char, new_branch(RWords, Tag)},
+            set_branch(#{}, [], Tag, [TreeMap | TreeMaps]);
         Val ->
-            if
-                RWords == [] ->
-                    case maps:get(tag, Map, null) of
-                        null ->
-                            set_branch(Map, [], Tag, [{Char, Val#{tag => Tag}} | TreeMaps]);
-                        TagOld ->
-                            case lists:member(Tag, TagOld) of
-                                true -> null;
-                                false ->
-                                    set_branch(Map, [], Tag, [{Char, Val#{tag => [Tag | TagOld]}} | TreeMaps])
-                            end
-                    end;
-                true ->
-                    set_branch(Val, RWords, Tag, [{Char, Val} | TreeMaps])
+%%            ?INFO("ccc:~ts", [[Map, [Char | RWords], TreeMaps]]),
+            set_branch(Val, RWords, Tag, [{Char, Val} | TreeMaps])
+    end.
+
+set_tag(Tag, Key, Val) ->
+    case maps:get(tag, Val, null) of
+        null -> {Key, Val#{tag => [Tag]}};
+        TagOld ->
+            case lists:member(Tag, TagOld) of
+                true -> {Key, Val#{tag => TagOld}};
+                false -> {Key, Val#{tag => [Tag | TagOld]}}
             end
     end.
 
+search(TrieMap, Words) -> search(TrieMap, Words, []).
 
-search(Dict, Input) -> search(Dict, Input, []).
-
-search(_Dict, [], Acc) -> lists:reverse(Acc);
-search(Dict, [H | Lists], Acc) ->
-    case search(Dict, [H | Lists], [], []) of
-        [] -> search(Dict, Lists, [{skip, H} | Acc]);
-        MatchWords -> [search(Dict, RLists, [{match, Words, Markup} | Acc]) || {RLists, Words, Markup} <- MatchWords]
+search(_TrieMap, [], Acc) -> lists:reverse(Acc);
+search(TrieMap, [H | Lists], Acc) ->
+    case search(TrieMap, [H | Lists], [], []) of
+        [] -> search(TrieMap, Lists, [{skip, H} | Acc]);
+        MatchWords -> [search(TrieMap, RLists, [{match, Words, Tags} | Acc]) || {RLists, Words, Tags} <- MatchWords]
     end.
 
 
 %% @doc 一次匹配中匹配出的所有情况
-search(_Dict, [], _Words, Acc) -> Acc;
-search(Dict, [H | Lists], Words, Acc) ->
-    case dict:find(H, Dict) of
-        error ->
-            if
-                Acc == [] -> Acc;
-                true -> Acc
-            end;
-        {ok, DictChild} ->
-            case dict:find(mark, DictChild) of
-                error ->
-                    search(DictChild, Lists, Words ++ [H], Acc);
-                {ok, Markup} ->
-                    search(DictChild, Lists, Words ++ [H], [{Lists, Words ++ [H], Markup} | Acc])
+search(_TrieMap, [], _Words, Acc) -> Acc;
+search(TrieMap, [H | Lists], Words, Acc) ->
+    case maps:get(H, TrieMap, null) of
+        null ->
+            Acc;
+        ChildTrie ->
+            case maps:get(tag, ChildTrie, null) of
+                null ->
+                    search(ChildTrie, Lists, [H | Words], Acc);
+                Tags ->
+                    search(ChildTrie, Lists, [H | Words], [{Lists, [H | Words], Tags} | Acc])
             end
     end.
 
-
-search_max(Dict, Input) -> search_max(Dict, Input, []).
-
-search_max(_Dict, [], Acc) -> lists:reverse(Acc);
-search_max(Dict, Lists, Acc) ->
-    case search_max(Dict, Lists, <<>>, []) of
-        error ->
-            [H | R] = Lists,
-            search_max(Dict, R, [{skip, H} | Acc]);
-        {RLists, Words, Markup} ->
-            search_max(Dict, RLists, [{match, Words, Markup} | Acc])
-    end.
-
-
-search_max(_Tree, [], Words, Acc) -> {[], Words, Acc};
-search_max(Tree, [Char | R], Words, Acc) ->
-    case maps:find(Char, Tree) of
-        error ->
-            if
-                Acc == [] -> error;
-                true -> {[Char | R], Words, Acc}
-            end;
-        {ok, TreeChild} ->
-            case maps:find(mark, TreeChild) of
-                error -> search_max(TreeChild, R, Words ++ [Char], Acc);
-                {ok, Markup} -> search_max(TreeChild, R, Words ++ [Char], Markup)
-            end
-    end.
