@@ -32,7 +32,7 @@ add_words(Trie, Data) ->
 add_words(Map, Items, Tag) ->
     lists:foldl(
         fun(Item, MapAcc) ->
-            ?INFO("aaa:~tp", [[Item, Tag]]),
+%%            ?INFO("aaa:~tp", [[Item, Tag]]),
             MapAccRet = set_branch(MapAcc, Item, Tag),
             maps:merge(MapAcc, MapAccRet)
         end,
@@ -100,7 +100,7 @@ search(_TrieMap, [], Acc) -> lists:reverse(Acc);
 search(TrieMap, [H | Lists], Acc) ->
     case search(TrieMap, [H | Lists], [], []) of
         [] -> search(TrieMap, Lists, [{skip, H} | Acc]);
-        MatchWords -> [search(TrieMap, RLists, [{match, Words, Tags} | Acc]) || {RLists, Words, Tags} <- MatchWords]
+        MatchWords -> [search(TrieMap, RLists, [{match, lists:reverse(Words), Tags} | Acc]) || {RLists, Words, Tags} <- MatchWords]
     end.
 
 
