@@ -40,7 +40,8 @@ add_words(Map, Items, Tag) ->
         Items).
 
 
-new_branch([_Char], Tag) -> #{tag => [Tag]};
+new_branch([], Tag) -> #{tag => [Tag]};
+new_branch([Char], Tag) -> #{Char => #{tag => [Tag]}};
 new_branch(Words, Tag) ->
     [Char | R] = lists:reverse(Words),
     new_acc(R, #{Char => #{tag => [Tag]}}).
@@ -68,7 +69,7 @@ set_branch(_Map, [], _Tag, TreeMaps) ->
 set_branch(Map, [Char], Tag, TreeMaps) ->
     case maps:get(Char, Map, null) of
         null ->
-            set_branch(#{}, [], Tag, [{Char, new_branch([Char], Tag)} | TreeMaps]);
+            set_branch(#{}, [], Tag, [{Char, new_branch([], Tag)} | TreeMaps]);
         Val ->
             TreeMap = set_tag(Tag, Char, Val),
             set_branch(Val, [], Tag, [TreeMap | TreeMaps])
@@ -94,28 +95,33 @@ set_tag(Tag, Key, Val) ->
             end
     end.
 
-search(TrieMap, Words) -> search(TrieMap, Words, []).
+search(TrieMap, Words) -> [I || {I} <- lists:flatten(search(TrieMap, Words, []))].
 
-search(_TrieMap, [], Acc) -> lists:reverse(Acc);
+search(_TrieMap, [], Acc) -> {lists:reverse(Acc)};
 search(TrieMap, [H | Lists], Acc) ->
-    case search(TrieMap, [H | Lists], [], []) of
-        [] -> search(TrieMap, Lists, [{skip, H} | Acc]);
-        MatchWords -> [search(TrieMap, RLists, [{match, lists:reverse(Words), Tags} | Acc]) || {RLists, Words, Tags} <- MatchWords]
+    case words_tag(TrieMap, [H | Lists], [], []) of
+        [] ->
+            search(TrieMap, Lists, [{skip, H} | Acc]);
+        MatchWords ->
+%%            ?INFO("aaa:~tp", [MatchWords]),
+            [search(TrieMap, RLists, [{match, Words, Tags} | Acc]) || {RLists, Words, Tags} <- MatchWords]
     end.
 
 
 %% @doc 一次匹配中匹配出的所有情况
-search(_TrieMap, [], _Words, Acc) -> Acc;
-search(TrieMap, [H | Lists], Words, Acc) ->
-    case maps:get(H, TrieMap, null) of
+words_tag(_Trie, [], _MatchWords, Acc) ->
+%%    ?INFO("bbb:~tp", [[_MatchWords, Acc]]),
+    Acc;
+words_tag(Trie, [Char | RWords], MatchWords, Acc) ->
+%%    ?INFO("ccc:~tp", [Acc]),
+    case maps:get(Char, Trie, null) of
         null ->
             Acc;
-        ChildTrie ->
-            case maps:get(tag, ChildTrie, null) of
+        TrieChild ->
+            case maps:get(tag, TrieChild, null) of
                 null ->
-                    search(ChildTrie, Lists, [H | Words], Acc);
+                    words_tag(TrieChild, RWords, MatchWords ++ [Char], Acc);
                 Tags ->
-                    search(ChildTrie, Lists, [H | Words], [{Lists, [H | Words], Tags} | Acc])
+                    words_tag(TrieChild, RWords, MatchWords ++ [Char], [{RWords, MatchWords ++ [Char], Tags} | Acc])
             end
     end.
-
