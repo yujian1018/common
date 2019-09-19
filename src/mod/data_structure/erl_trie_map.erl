@@ -95,7 +95,13 @@ set_tag(Tag, Key, Val) ->
             end
     end.
 
-search(TrieMap, Words) -> [I || {I} <- lists:flatten(search(TrieMap, Words, []))].
+search(TrieMap, Words) ->
+    Ret = search(TrieMap, Words, []),
+%%    ?INFO("aaa:~tp", [Ret]),
+    if
+        is_list(Ret) -> [I || {I} <- lists:flatten(Ret)];
+        true -> []
+    end.
 
 search(_TrieMap, [], Acc) -> {lists:reverse(Acc)};
 search(TrieMap, [H | Lists], Acc) ->
