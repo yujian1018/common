@@ -109,7 +109,7 @@ search(TrieMap, [H | Lists], Acc) ->
         [] ->
             search(TrieMap, Lists, [{skip, H} | Acc]);
         MatchWords ->
-%%            ?INFO("aaa:~tp", [MatchWords]),
+            ?INFO("aaa:~tp", [MatchWords]),
             [search(TrieMap, RLists, [{match, Words, Tags} | Acc]) || {RLists, Words, Tags} <- MatchWords]
     end.
 
@@ -128,6 +128,13 @@ words_tag(Trie, [Char | RWords], MatchWords, Acc) ->
                 null ->
                     words_tag(TrieChild, RWords, MatchWords ++ [Char], Acc);
                 Tags ->
-                    words_tag(TrieChild, RWords, MatchWords ++ [Char], [{RWords, MatchWords ++ [Char], Tags} | Acc])
+                    Expand =
+                        case [Tag || Tag <- Tags, element(1, Tag) == <<"FUNCTION">>] of
+                            [] -> [];
+                            Functions ->
+                                [I || I <- [Fun([Char | RWords], MatchWords) || {<<"FUNCTION">>, Fun} <- Functions], I =/= []]
+                        end,
+                    AccRet = Expand ++ [{RWords, MatchWords ++ [Char], Tags} | Acc],
+                    words_tag(TrieChild, RWords, MatchWords ++ [Char], AccRet)
             end
     end.
