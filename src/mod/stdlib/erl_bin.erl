@@ -8,12 +8,12 @@
 
 -export([
     uuid/0, uuid_bin/0, order_id/0,
-
+    
     sql/1, mysql_encode/1, mysql_decode/1, %转译 mysql关键字' 单引号
-
+    
     term_to_bin/1, bin_to_term/1,
-
-    to_lower/1, to_upper/1
+    
+    to_lower/1, to_upper/1, join/2
 ]).
 
 
@@ -169,3 +169,13 @@ bin_to_term(Bin) ->
         true ->
             Bin
     end.
+
+join(Bins, Token) ->
+    lists:foldl(
+        fun(Bin, Acc) ->
+            if
+                Acc == <<>> -> Bin; true -> <<Bin/binary, Token/binary, Acc/binary>>
+            end
+        end,
+        <<>>,
+        Bins).

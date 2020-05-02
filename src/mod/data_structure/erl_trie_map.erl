@@ -109,7 +109,7 @@ search(TrieMap, [H | Lists], Acc) ->
         [] ->
             search(TrieMap, Lists, [{skip, H} | Acc]);
         MatchWords ->
-            ?INFO("aaa:~tp", [MatchWords]),
+%%            ?INFO("aaa:~tp", [MatchWords]),
             [search(TrieMap, RLists, [{match, Words, Tags} | Acc]) || {RLists, Words, Tags} <- MatchWords]
     end.
 
