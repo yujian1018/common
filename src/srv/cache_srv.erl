@@ -12,7 +12,7 @@
 
 -export([
     refresh/0,
-    reset_record/3
+    reset_record/3, reset_record/4
 ]).
 
 
@@ -41,7 +41,7 @@ init(AppName) ->
     {ok, #{app_name => AppName}}.
 
 
-handle_call(refresh, _From, State = #{app_name:=AppName}) ->
+handle_call(refresh, _From, State = #{app_name := AppName}) ->
     catch refresh_time(AppName),
     {reply, ok, State};
 
@@ -51,7 +51,7 @@ handle_call(_Request, _From, State) ->
 handle_cast(_Request, State) ->
     {noreply, State}.
 
-handle_info({timeout, _TimerRef, ?timeout_mi_1}, State = #{app_name:=AppName}) ->
+handle_info({timeout, _TimerRef, ?timeout_mi_1}, State = #{app_name := AppName}) ->
     catch refresh_time(AppName),
     erlang:start_timer(?TIMEOUT_MI_1, self(), ?timeout_mi_1),
     {noreply, State};
@@ -79,4 +79,22 @@ reset_record(TabName, AllRecords, NewAllIds) ->
     ets:insert(TabName, AllRecords),
     ets:insert(TabName, {TabName, all_ids, NewAllIds}),
     [ets:delete(TabName, DelId) || DelId <- DelIds],
+    OldIds.
+
+reset_record(TabName, AllRecords, NewAllIds, TabType) ->
+    OldIds = case ets:lookup(TabName, all_ids) of
+                 [] -> [];
+                 [{_, _, IdList1}] -> IdList1
+             end,
+    DelIds = erl_list:diff(OldIds, NewAllIds, []),
+    ets:insert(TabName, AllRecords),
+    
+    if
+        TabType == bag ->
+            ets:delete(TabName, {TabName, all_ids, OldIds}),
+            [ets:delete(TabName, DelId) || DelId <- DelIds];
+        true ->
+            [ets:delete(TabName, DelId) || DelId <- DelIds]
+    end,
+    ets:insert(TabName, {TabName, all_ids, NewAllIds}),
     OldIds.
