@@ -91,8 +91,8 @@ reset_record(TabName, AllRecords, NewAllIds, TabType) ->
     
     if
         TabType == bag ->
-            ets:delete(TabName, {TabName, all_ids, OldIds}),
-            [ets:delete(TabName, DelId) || DelId <- DelIds];
+            ets:delete_object(TabName, {TabName, all_ids, OldIds}),
+            [ets:delete_object(TabName, DelId) || DelId <- DelIds];
         true ->
             [ets:delete(TabName, DelId) || DelId <- DelIds]
     end,

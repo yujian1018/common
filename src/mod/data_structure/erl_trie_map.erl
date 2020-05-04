@@ -96,29 +96,29 @@ set_tag(Tag, Key, Val) ->
     end.
 
 search(TrieMap, Words) ->
-    Ret = search(TrieMap, Words, []),
+    Ret = search(TrieMap, Words, [], Words),
 %%    ?INFO("aaa:~tp", [Ret]),
     if
         is_list(Ret) -> [I || {I} <- lists:flatten(Ret)];
         true -> []
     end.
 
-search(_TrieMap, [], Acc) -> {lists:reverse(Acc)};
-search(TrieMap, [H | Lists], Acc) ->
-    case words_tag(TrieMap, [H | Lists], [], []) of
+search(_TrieMap, [], Acc, _Words) -> {lists:reverse(Acc)};
+search(TrieMap, [H | Lists], Acc, Words) ->
+    case words_tag(TrieMap, [H | Lists], [], [], Words) of
         [] ->
-            search(TrieMap, Lists, [{skip, H} | Acc]);
+            search(TrieMap, Lists, [{skip, H} | Acc], Words);
         MatchWords ->
 %%            ?INFO("aaa:~tp", [MatchWords]),
-            [search(TrieMap, RLists, [{match, Words, Tags} | Acc]) || {RLists, Words, Tags} <- MatchWords]
+            [search(TrieMap, RLists, [{match, IWords, Tags} | Acc], Words) || {RLists, IWords, Tags} <- MatchWords]
     end.
 
 
 %% @doc 一次匹配中匹配出的所有情况
-words_tag(_Trie, [], _MatchWords, Acc) ->
+words_tag(_Trie, [], _MatchWords, Acc, _Words) ->
 %%    ?INFO("bbb:~tp", [[_MatchWords, Acc]]),
     Acc;
-words_tag(Trie, [Char | RWords], MatchWords, Acc) ->
+words_tag(Trie, [Char | RWords], MatchWords, Acc, Words) ->
 %%    ?INFO("ccc:~tp", [Acc]),
     case maps:get(Char, Trie, null) of
         null ->
@@ -126,15 +126,28 @@ words_tag(Trie, [Char | RWords], MatchWords, Acc) ->
         TrieChild ->
             case maps:get(tag, TrieChild, null) of
                 null ->
-                    words_tag(TrieChild, RWords, MatchWords ++ [Char], Acc);
+                    words_tag(TrieChild, RWords, MatchWords ++ [Char], Acc, Words);
                 Tags ->
-                    Expand =
-                        case [Tag || Tag <- Tags, element(1, Tag) == <<"FUNCTION">>] of
-                            [] -> [];
-                            Functions ->
-                                [I || I <- [Fun([Char | RWords], MatchWords) || {<<"FUNCTION">>, Fun} <- Functions], I =/= []]
-                        end,
-                    AccRet = Expand ++ [{RWords, MatchWords ++ [Char], Tags} | Acc],
-                    words_tag(TrieChild, RWords, MatchWords ++ [Char], AccRet)
+                    {RetTags, Expand} =
+                        lists:foldl(
+                            fun(Tag, {TagsAcc, ExpandTagsAcc}) ->
+                                if
+                                    element(1, Tag) == <<"FUNCTION">> ->
+                                        Fun = element(2, Tag),
+                                        {TagsAcc, Fun([Char | RWords], MatchWords, Acc, Words) ++ ExpandTagsAcc};
+                                    true -> {[Tag | TagsAcc], ExpandTagsAcc}
+                                end
+                            end,
+                            {[], []},
+                            Tags),
+%%                    ?INFO("bbb:~tp", [[Tags, [Char | RWords], MatchWords, Acc, Expand, RetTags]]),
+                    if
+                        RetTags =:= [] andalso Expand == [] ->
+                            Acc;
+                        RetTags =:= [] ->
+                            words_tag(TrieChild, RWords, MatchWords ++ [Char], Expand ++ Acc, Words);
+                        true ->
+                            words_tag(TrieChild, RWords, MatchWords ++ [Char], Expand ++ [{RWords, MatchWords ++ [Char], RetTags} | Acc], Words)
+                    end
             end
     end.
