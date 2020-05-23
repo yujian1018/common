@@ -86,11 +86,11 @@ sql(Values) ->
             if
                 is_integer(Value) -> integer_to_binary(Value);
                 Value =:= undefined -> <<>>;
-                true -> Value
+                true -> <<"'", Value/binary, "'">>
             end,
         if
-            Acc =:= <<>> -> <<"'", NewValue/binary, "'">>;
-            true -> <<Acc/binary, ",'", NewValue/binary, "'">>
+            Acc =:= <<>> -> NewValue;
+            true -> <<Acc/binary, ",", NewValue/binary>>
         end
                end,
     Sql = lists:foldl(FunFoldl, <<>>, Values),
