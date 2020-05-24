@@ -20,7 +20,7 @@ execute(_Pool, <<>>) ->
 execute(_Pool, []) ->
     [];
 execute(_Pool, SQL) ->
-    {'ok', Confs} = application:get_env(assistant, pool_log_clickhouse_1),
+    {'ok', Confs} = application:get_env(gateway, pool_log_clickhouse_1),
     Host = proplists:get_value(host, Confs, "localhost"),
     Port = proplists:get_value(port, Confs, "8123"),
     User = proplists:get_value(user, Confs, "default"),
