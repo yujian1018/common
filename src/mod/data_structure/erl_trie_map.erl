@@ -104,29 +104,29 @@ search(TrieMap, Words) ->
     end.
 
 search(_TrieMap, [], Acc, _Words) -> {lists:reverse(Acc)};
-search(TrieMap, [H | Lists], Acc, Words) ->
-    case words_tag(TrieMap, [H | Lists], [], [], Words) of
+search(TrieMap, [H | Lists], Acc, FuzzyQueryArgs) ->
+    case words_tag(TrieMap, [H | Lists], [], [], FuzzyQueryArgs) of
         [] ->
-            search(TrieMap, Lists, [{skip, H} | Acc], Words);
+            search(TrieMap, Lists, [{skip, H} | Acc], FuzzyQueryArgs);
         MatchWords ->
-%%            ?INFO("aaa:~tp", [MatchWords]),
-            [search(TrieMap, RLists, [{match, IWords, Tags} | Acc], Words) || {RLists, IWords, Tags} <- MatchWords]
+%%            ?INFO("aaa:~tp~nbbb:~tp", [MatchWords, Acc]),
+            [search(TrieMap, RLists, [{match, IWords, Tags} | Acc], RLists) || {RLists, IWords, Tags} <- MatchWords]
     end.
 
 
 %% @doc 一次匹配中匹配出的所有情况
-words_tag(_Trie, [], _MatchWords, Acc, _Words) ->
+words_tag(_Trie, [], _MatchWords, Acc, _FuzzyQueryArgs) ->
 %%    ?INFO("bbb:~tp", [[_MatchWords, Acc]]),
     Acc;
-words_tag(Trie, [Char | RWords], MatchWords, Acc, Words) ->
-%%    ?INFO("ccc:~tp", [Acc]),
+words_tag(Trie, [Char | RWords], MatchWords, Acc, FuzzyQueryArgs) ->
+%%    ?INFO("ccc:~tp", [{[Char | RWords], MatchWords, Acc, Words}]),
     case maps:get(Char, Trie, null) of
         null ->
             Acc;
         TrieChild ->
             case maps:get(tag, TrieChild, null) of
                 null ->
-                    words_tag(TrieChild, RWords, MatchWords ++ [Char], Acc, Words);
+                    words_tag(TrieChild, RWords, MatchWords ++ [Char], Acc, FuzzyQueryArgs);
                 Tags ->
                     {RetTags, Expand} =
                         lists:foldl(
@@ -134,7 +134,8 @@ words_tag(Trie, [Char | RWords], MatchWords, Acc, Words) ->
                                 if
                                     element(1, Tag) == <<"FUNCTION">> ->
                                         Fun = element(2, Tag),
-                                        {TagsAcc, Fun([Char | RWords], MatchWords, Acc, Words) ++ ExpandTagsAcc};
+%%                                        ?DEBUG("aaa:~tp", [{TagsAcc, Fun, [Char | RWords], MatchWords, Acc, FuzzyQueryArgs, ExpandTagsAcc}]),
+                                        {TagsAcc, Fun([Char | RWords], MatchWords, Acc, FuzzyQueryArgs) ++ ExpandTagsAcc};
                                     true -> {[Tag | TagsAcc], ExpandTagsAcc}
                                 end
                             end,
@@ -145,9 +146,9 @@ words_tag(Trie, [Char | RWords], MatchWords, Acc, Words) ->
                         RetTags =:= [] andalso Expand == [] ->
                             Acc;
                         RetTags =:= [] ->
-                            words_tag(TrieChild, RWords, MatchWords ++ [Char], Expand ++ Acc, Words);
+                            words_tag(TrieChild, RWords, MatchWords ++ [Char], Expand ++ Acc, FuzzyQueryArgs);
                         true ->
-                            words_tag(TrieChild, RWords, MatchWords ++ [Char], Expand ++ [{RWords, MatchWords ++ [Char], RetTags} | Acc], Words)
+                            words_tag(TrieChild, RWords, MatchWords ++ [Char], Expand ++ [{RWords, MatchWords ++ [Char], RetTags} | Acc], FuzzyQueryArgs)
                     end
             end
     end.
