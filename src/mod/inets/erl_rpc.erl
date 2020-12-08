@@ -15,7 +15,7 @@
 call(UrlId, Args) ->
     {Url, Arg, Method} = cache_rule:get_url(UrlId),
     case Url of
-        <<"http:", _/binary>> ->
+        <<"http", _/binary>> ->
             NewArgs = data(fun(I) -> cow_uri:urlencode(I) end, Arg, Args),
             if
                 Method =:= <<"get">> -> erl_httpc:get(<<Url/binary, "?", NewArgs/binary>>, []);
