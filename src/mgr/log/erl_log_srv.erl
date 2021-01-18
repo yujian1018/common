@@ -35,7 +35,7 @@ handle_cast(_Msg, State) ->
     {noreply, State}.
 
 
-handle_info({timeout, _TimerRef, ?timeout_mi_5}, State = #{tab_name :=TabName, logs:= Logs}) ->
+handle_info({timeout, _TimerRef, ?timeout_mi_5}, State = #{tab_name := TabName, logs := Logs}) ->
     save_data(TabName, Logs),
     erlang:start_timer(?TIMEOUT_MI_5, self(), ?timeout_mi_5),
     {noreply, State#{logs => [], count => 0}};
@@ -53,7 +53,7 @@ handle_info(Msg, State = #{count := Count, tab_name := TabName, logs := Logs}) w
     {noreply, NewState}.
 
 
-terminate(_Reason, #{tab_name :=TabName, logs:= Logs}) ->
+terminate(_Reason, #{tab_name := TabName, logs := Logs}) ->
     save_data(TabName, Logs).
 
 

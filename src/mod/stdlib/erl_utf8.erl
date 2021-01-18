@@ -6,6 +6,8 @@
 %%%-------------------------------------------------------------------
 -module(erl_utf8).
 
+-include("erl_pub.hrl").
+
 -export([
     char/1,
     to_list/1
@@ -13,6 +15,7 @@
 
 
 %% @doc 获取一个utf8的字符
+char(<<>>) -> {<<>>, <<>>};
 char(<<B1:8, Bin/binary>>) ->
     if
         B1 >= 1 andalso B1 =< 127 ->
@@ -35,7 +38,14 @@ char(<<B1:8, Bin/binary>>) ->
     end.
 
 to_list(<<>>) -> [];
-to_list(Bin) -> to_list(Bin, []).
+to_list(Bin) ->
+    try
+        to_list(Bin, [])
+    catch
+        Catch:Why:Stk ->
+            ?ERROR("err:~tp", [[Bin, Catch, Why, Stk]]),
+            []
+    end.
 
 to_list(Bin, Acc) ->
     case erl_utf8:char(Bin) of

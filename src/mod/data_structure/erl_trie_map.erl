@@ -11,35 +11,40 @@
 %%-compile(export_all).
 
 -export([
-    new/2,
-    search/2, search_max/3, search_max/2
+    add_words/2,
+    search/2
 ]).
 
 %% 初始化
-%%-spec new(#{}, [{{<<"F">>, 1070010001}, [<<"我们都有一个家"/utf8>>]}]) -> #{}.
-new(Trie, Data) ->
+%%-spec new(#{}, [{{<<"F">>, 1070010001}, [[<<"我">>, <<"们">>, <<"都">>, <<"有">>, <<"一">>, <<"个">>, <<"家"/utf8>>]}]) -> #{}.
+add_words(Trie, Data) ->
     lists:foldl(
         fun({Tag, Items}, TrieAcc) ->
             if
                 Items =:= [] -> TrieAcc;
-                true -> add_items(TrieAcc, Items, Tag)
+                true -> add_words(TrieAcc, Items, Tag)
             end
         end, Trie, Data).
 
 
 %% 1.计算分支中老的节点更新
 %% 2.计算分支中新的节点
-add_items(Map, Items, Tag) ->
+add_words(Map, Items, Tag) ->
     lists:foldl(
         fun(Item, MapAcc) ->
-            set_branch(MapAcc, erl_utf8:to_list(Item), Tag)
+%%            ?INFO("aaa:~tp", [[Item, Tag]]),
+            MapAccRet = set_branch(MapAcc, Item, Tag),
+            maps:merge(MapAcc, MapAccRet)
         end,
         Map,
         Items).
 
 
-new_branch([Char], Tag) -> #{Char => null, tag => Tag};
-new_branch([Char | R], Tag) -> new_acc(R, #{Char => null, tag => Tag}).
+new_branch([], Tag) -> #{tag => [Tag]};
+new_branch([Char], Tag) -> #{Char => #{tag => [Tag]}};
+new_branch(Words, Tag) ->
+    [Char | R] = lists:reverse(Words),
+    new_acc(R, #{Char => #{tag => [Tag]}}).
 
 new_acc([], MapAcc) -> MapAcc;
 new_acc([Char | R], MapAcc) -> new_acc(R, #{Char => MapAcc}).
@@ -50,81 +55,100 @@ set_branch(Map, Words, Tag) ->
 
 
 set_branch(_Map, [], _Tag, TreeMaps) ->
-    lists:foldl(
-        fun({Key, KeyMaps}, MapsAcc) ->
-            MapsAcc#{Key => KeyMaps}
+%%    ?INFO("TreeMaps 111：~tp", [TreeMaps]),
+    RMap = lists:foldl(
+        fun({Key, Val}, MapsAcc) ->
+%%            ?INFO("TreeMaps 222：~tp", [[{Key, Val}, MapsAcc]]),
+            #{Key => maps:merge(Val, MapsAcc)}
         end,
         #{},
-        TreeMaps);
+        TreeMaps),
+%%    ?INFO("TreeMaps 333：~tp", [[RMap]]),
+    RMap;
 
-
-set_branch(Map, [Char1, Char2 | RWords], Tag, TreeMaps) ->
-    case maps:get(Char1, Map, null) of
+set_branch(Map, [Char], Tag, TreeMaps) ->
+    case maps:get(Char, Map, null) of
         null ->
-            set_branch(Map, [], Tag, [{Char1, #{Char1 => new_branch([Char2 | RWords], Tag)}} | TreeMaps]);
+            set_branch(#{}, [], Tag, [{Char, new_branch([], Tag)} | TreeMaps]);
         Val ->
-            if
-                RWords == [] ->
-                    set_branch(Map, [], Tag, [{Char1, #{Char1 => new_branch([Char2 | RWords], Tag)}} | TreeMaps]);
-                true ->
-                    set_branch(Val, [Char2 | RWords], Tag, [{Char1, Val} | TreeMaps])
+            TreeMap = set_tag(Tag, Char, Val),
+            set_branch(Val, [], Tag, [TreeMap | TreeMaps])
+    end;
+
+set_branch(Map, [Char | RWords], Tag, TreeMaps) ->
+    case maps:get(Char, Map, null) of
+        null ->
+            TreeMap = {Char, new_branch(RWords, Tag)},
+            set_branch(#{}, [], Tag, [TreeMap | TreeMaps]);
+        Val ->
+%%            ?INFO("ccc:~ts", [[Map, [Char | RWords], TreeMaps]]),
+            set_branch(Val, RWords, Tag, [{Char, Val} | TreeMaps])
+    end.
+
+set_tag(Tag, Key, Val) ->
+    case maps:get(tag, Val, null) of
+        null -> {Key, Val#{tag => [Tag]}};
+        TagOld ->
+            case lists:member(Tag, TagOld) of
+                true -> {Key, Val#{tag => TagOld}};
+                false -> {Key, Val#{tag => [Tag | TagOld]}}
             end
     end.
 
+search(TrieMap, Words) ->
+    Ret = search(TrieMap, Words, [], Words),
+%%    ?INFO("aaa:~tp", [Ret]),
+    if
+        is_list(Ret) -> [I || {I} <- lists:flatten(Ret)];
+        true -> []
+    end.
 
-search(Dict, Input) -> search(Dict, Input, []).
-
-search(_Dict, [], Acc) -> lists:reverse(Acc);
-search(Dict, [H | Lists], Acc) ->
-    case search(Dict, [H | Lists], [], []) of
-        [] -> search(Dict, Lists, [{skip, H} | Acc]);
-        MatchWords -> [search(Dict, RLists, [{match, Words, Markup} | Acc]) || {RLists, Words, Markup} <- MatchWords]
+search(_TrieMap, [], Acc, _Words) -> {lists:reverse(Acc)};
+search(TrieMap, [H | Lists], Acc, FuzzyQueryArgs) ->
+    case words_tag(TrieMap, [H | Lists], [], [], FuzzyQueryArgs) of
+        [] ->
+            search(TrieMap, Lists, [{skip, H} | Acc], FuzzyQueryArgs);
+        MatchWords ->
+%%            ?INFO("aaa:~tp~nbbb:~tp", [MatchWords, Acc]),
+            [search(TrieMap, RLists, [{match, IWords, Tags} | Acc], RLists) || {RLists, IWords, Tags} <- MatchWords]
     end.
 
 
 %% @doc 一次匹配中匹配出的所有情况
-search(_Dict, [], _Words, Acc) -> Acc;
-search(Dict, [H | Lists], Words, Acc) ->
-    case dict:find(H, Dict) of
-        error ->
-            if
-                Acc == [] -> Acc;
-                true -> Acc
-            end;
-        {ok, DictChild} ->
-            case dict:find(mark, DictChild) of
-                error ->
-                    search(DictChild, Lists, Words ++ [H], Acc);
-                {ok, Markup} ->
-                    search(DictChild, Lists, Words ++ [H], [{Lists, Words ++ [H], Markup} | Acc])
-            end
-    end.
-
-
-search_max(Dict, Input) -> search_max(Dict, Input, []).
-
-search_max(_Dict, [], Acc) -> lists:reverse(Acc);
-search_max(Dict, Lists, Acc) ->
-    case search_max(Dict, Lists, <<>>, []) of
-        error ->
-            [H | R] = Lists,
-            search_max(Dict, R, [{skip, H} | Acc]);
-        {RLists, Words, Markup} ->
-            search_max(Dict, RLists, [{match, Words, Markup} | Acc])
-    end.
-
-
-search_max(_Tree, [], Words, Acc) -> {[], Words, Acc};
-search_max(Tree, [Char | R], Words, Acc) ->
-    case maps:find(Char, Tree) of
-        error ->
-            if
-                Acc == [] -> error;
-                true -> {[Char | R], Words, Acc}
-            end;
-        {ok, TreeChild} ->
-            case maps:find(mark, TreeChild) of
-                error -> search_max(TreeChild, R, Words ++ [Char], Acc);
-                {ok, Markup} -> search_max(TreeChild, R, Words ++ [Char], Markup)
+words_tag(_Trie, [], _MatchWords, Acc, _FuzzyQueryArgs) ->
+%%    ?INFO("bbb:~tp", [[_MatchWords, Acc]]),
+    Acc;
+words_tag(Trie, [Char | RWords], MatchWords, Acc, FuzzyQueryArgs) ->
+%%    ?INFO("ccc:~tp", [{[Char | RWords], MatchWords, Acc, Words}]),
+    case maps:get(Char, Trie, null) of
+        null ->
+            Acc;
+        TrieChild ->
+            case maps:get(tag, TrieChild, null) of
+                null ->
+                    words_tag(TrieChild, RWords, MatchWords ++ [Char], Acc, FuzzyQueryArgs);
+                Tags ->
+                    {RetTags, Expand} =
+                        lists:foldl(
+                            fun(Tag, {TagsAcc, ExpandTagsAcc}) ->
+                                if
+                                    element(1, Tag) == <<"FUNCTION">> ->
+                                        Fun = element(2, Tag),
+%%                                        ?DEBUG("aaa:~tp", [{TagsAcc, Fun, [Char | RWords], MatchWords, Acc, FuzzyQueryArgs, ExpandTagsAcc}]),
+                                        {TagsAcc, Fun([Char | RWords], MatchWords, Acc, FuzzyQueryArgs) ++ ExpandTagsAcc};
+                                    true -> {[Tag | TagsAcc], ExpandTagsAcc}
+                                end
+                            end,
+                            {[], []},
+                            Tags),
+%%                    ?INFO("bbb:~tp", [[Tags, [Char | RWords], MatchWords, Acc, Expand, RetTags]]),
+                    if
+                        RetTags =:= [] andalso Expand == [] ->
+                            Acc;
+                        RetTags =:= [] ->
+                            words_tag(TrieChild, RWords, MatchWords ++ [Char], Expand ++ Acc, FuzzyQueryArgs);
+                        true ->
+                            words_tag(TrieChild, RWords, MatchWords ++ [Char], Expand ++ [{RWords, MatchWords ++ [Char], RetTags} | Acc], FuzzyQueryArgs)
+                    end
             end
     end.

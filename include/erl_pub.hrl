@@ -17,13 +17,14 @@
 -define(put(K, V), erlang:put(K, V)).
 -define(get(K), erlang:get(K)).
 
--define(encode(Rfc4627Data), list_to_binary(jsx:encode(Rfc4627Data))).
+-define(encode(Rfc4627Data), jsx:encode(Rfc4627Data)).
 -define(decode(Rfc4627Data),
     case jsx:decode(Rfc4627Data) of
         {ok, {obj, Rfc4627Obj}, []} ->
             Rfc4627Obj;
         {ok, Rfc4627Obj, []} ->
-            Rfc4627Obj
+            Rfc4627Obj;
+        Rfc4627Obj -> Rfc4627Obj
     end).
 
 
